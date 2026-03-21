@@ -32,7 +32,7 @@ export async function getLatestDeals(): Promise<Deal[]> {
     WHERE pd.new_scraped_at = CURRENT_DATE
       AND ph.availability = TRUE
     ORDER BY pd.price_diff DESC
-    LIMIT 20;
+    LIMIT 0;
   `;
 
   const result = await pool.query(query);
