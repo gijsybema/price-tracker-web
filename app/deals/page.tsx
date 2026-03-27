@@ -1,11 +1,11 @@
 import DealCard from "../../components/DealCard";
-import { getLatestDeals } from "../../lib/deals";
+import { getDealpageDeals } from "../../lib/deals";
 
-export const dynamic = 'force-dynamic'
+{/* pagina wordt elke 60 minuten vernieuwd */}
+export const revalidate = 3600 
 
 export default async function DealsPage() {
-  console.log('DB URL host:', process.env.DATABASE_URL?.split('@')[1])
-  const deals = await getLatestDeals();
+  const deals = await getDealpageDeals();
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-16">

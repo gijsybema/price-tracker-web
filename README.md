@@ -29,6 +29,39 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Testdeal om logica te checken
+```sql
+--1. Voeg nieuw test product met grote daling toe
+WITH new_product AS (
+  INSERT INTO products (name, sku, brand, product_url)
+  VALUES (
+    'TEST DEAL - EXTREME DROP',
+	'999',
+	'TEST',
+    'https://example.com/test-extreme-drop'
+  )
+  RETURNING id
+)
+INSERT INTO price_history (product_id, price, scraped_at, availability)
+SELECT id, 400, CURRENT_DATE - INTERVAL '1 day', TRUE
+FROM new_product
+UNION ALL
+SELECT id, 150, CURRENT_DATE, TRUE
+FROM new_product;
+
+-- Verwijder rijen van testproduct
+-- 2a. Verwijder test uit price_history
+DELETE FROM price_history
+WHERE product_id IN (
+  SELECT id FROM products
+  WHERE sku = '999'
+);
+
+-- 2b. Verwijder test uit product
+DELETE FROM products
+WHERE sku = '999';
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
