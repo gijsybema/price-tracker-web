@@ -11,7 +11,7 @@ export default async function DealsPage() {
     <main className="mx-auto max-w-6xl px-6 py-16">
       <div className="max-w-2xl">
         <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-          Laatste prijsdalingen
+          Grootste prijsdalingen
         </h1>
         <p className="mt-4 text-lg text-gray-600">
           Een overzicht van recente deals die door de tracker zijn gedetecteerd.

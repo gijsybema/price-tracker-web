@@ -9,53 +9,68 @@ export default function HowItWorksPage() {
   
           <p className="mt-6 text-lg leading-8 text-gray-600">
             Deze tracker is gebouwd om echte prijsdalingen op premium headphones
-            zichtbaar te maken, zonder de gebruikelijke marketingruis.
+            zichtbaar te maken. Momenteel worden prijzen gemonitord bij retailers zoals Coolblue, 
+            met mogelijk uitbreiding in de toekomst.
           </p>
         </div>
   
         <div className="mt-16 space-y-12">
           <section>
             <h2 className="text-xl font-semibold text-gray-900">
-              1. Producten worden gevolgd
+              1. Selectie van producten
             </h2>
             <p className="mt-3 leading-8 text-gray-600">
-              De tracker monitort geselecteerde premium headphone-producten bij
-              Nederlandse retailers. De focus ligt op modellen waar een prijsdaling
-              van echte betekenis is.
+              Nederlandse retailers. De focus ligt momenteel op premium headphones 
+              waar een prijsdaling van echte betekenis is.
             </p>
           </section>
   
           <section>
             <h2 className="text-xl font-semibold text-gray-900">
-              2. Prijzen worden gecontroleerd
+              2. Dagelijkse prijsmeting
             </h2>
             <p className="mt-3 leading-8 text-gray-600">
-              De prijsdata wordt automatisch opgehaald en opgeslagen, zodat
-              veranderingen over tijd zichtbaar worden en prijsdrops objectief
-              kunnen worden gedetecteerd.
+              De prijzen worden dagelijks automatisch opgehaald en opgeslagen. 
+              Daardoor ontstaat een betrouwbare prijsgeschiedenis en kunnen 
+              prijsdalingen objectief worden gedetecteerd.
             </p>
           </section>
   
           <section>
             <h2 className="text-xl font-semibold text-gray-900">
-              3. Alleen relevante drops
+              3. Filtering van deals
             </h2>
             <p className="mt-3 leading-8 text-gray-600">
-              Niet elke korting is interessant. Daarom worden alleen deals getoond
-              die aan duidelijke criteria voldoen, zoals een significante
-              prijsdaling en focus op hogere prijsklassen.
+              Niet elke korting is interessant. Een product verschijnt pas wanneer 
+              het voldoet aan strikte voorwaarden zoals:
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Significante prijsdaling</li>
+                <li>Hogere prijsklasse</li>
+                <li>Product is op voorraad</li>
+              </ul>
             </p>
           </section>
   
           <section>
             <h2 className="text-xl font-semibold text-gray-900">
-              4. Deals worden gedeeld
+              4. Alleen actuele deals
             </h2>
             <p className="mt-3 leading-8 text-gray-600">
-              Zodra een interessante prijsdaling wordt gedetecteerd, kan deze op de
-              site of via een extern kanaal zoals Telegram gedeeld worden.
+              Je ziet alleen deals die nu nog geldig zijn. Als de prijs weer stijgt 
+              of het product niet meer beschikbaar is, verdwijnt de deal automatisch.
             </p>
           </section>
+
+          <section>
+            <h2 className="text-xl font-semibold text-gray-900">
+              5. Direct gedeeld
+            </h2>
+            <p className="mt-3 leading-8 text-gray-600">
+              Zodra een interessante prijsdaling wordt gedetecteerd, wordt deze direct getoond op de website 
+              en gedeeld via Telegram.
+            </p>
+          </section>
+
         </div>
       </main>
     );
