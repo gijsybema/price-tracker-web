@@ -1,7 +1,10 @@
 import DealCard from "../../components/DealCard";
 import { getLatestDeals } from "../../lib/deals";
 
+export const dynamic = 'force-dynamic'
+
 export default async function DealsPage() {
+  console.log('DB URL host:', process.env.DATABASE_URL?.split('@')[1])
   const deals = await getLatestDeals();
 
   return (
