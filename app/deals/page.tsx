@@ -4,6 +4,12 @@ import { getDealpageDeals } from "../../lib/deals";
 {/* pagina wordt elke 60 minuten vernieuwd */}
 export const revalidate = 3600 
 
+export const metadata = {
+  title: "Beste tech deals van vandaag | TechTracker",
+  description:
+    "Bekijk de grootste prijsdalingen op premium tech producten in Nederland. Dagelijkse updates.",
+}
+
 export default async function DealsPage() {
   const deals = await getDealpageDeals();
 

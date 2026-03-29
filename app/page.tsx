@@ -4,6 +4,12 @@ import { getHomepageDeals } from "../lib/deals";
 
 export const revalidate = 3600;
 
+export const metadata = {
+  title: "TechTracker – Echte tech deals in Nederland",
+  description:
+    "Ontdek echte prijsdalingen op premium tech producten. Dagelijkse updates.",
+};
+
 export default async function Home() {
   const deals = await getHomepageDeals();
 
@@ -17,13 +23,13 @@ export default async function Home() {
             </p>
 
             <h1 className="text-5xl font-bold tracking-tight md:text-6xl">
-              Prijsdalingen voor premium headphones
+              Beste tech deals van vandaag
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
-              Ik track dagelijks prijzen van premium headphones in Nederland en
+              TechTracker checkt dagelijks prijzen van populaire premium headphones in Nederland en
               laat alleen deals zien die echt interessant zijn. Gericht op
-              premium headphones, echte prijsdrops en producten die op voorraad zijn.
+              premium koptelefoons, echte prijsdalingen en producten die op voorraad zijn.
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
@@ -65,7 +71,7 @@ export default async function Home() {
         <div className="flex items-end justify-between gap-4">
           <div>
             <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-              Beste deals op dit moment
+              Beste headphone deals op dit moment
             </h2>
             <p className="mt-3 text-gray-600">
               De 3 sterkste actuele prijsdalingen op basis van de hoogste prijs in de afgelopen 30 dagen.
