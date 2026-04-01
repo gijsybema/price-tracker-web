@@ -13,6 +13,8 @@ export const metadata = {
 export default async function DealsPage() {
   const deals = await getDealpageDeals();
 
+  console.log("DealsPage deals:", deals.length, deals);
+
   return (
     <main className="mx-auto max-w-6xl px-6 py-16">
       <div className="max-w-2xl">
