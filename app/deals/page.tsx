@@ -1,8 +1,8 @@
 import DealCard from "../../components/DealCard";
 import { getDealpageDeals } from "../../lib/deals";
 
-{/* pagina wordt elke 60 minuten vernieuwd */}
-export const revalidate = 3600 
+{/* pagina wordt elke 5 minuten vernieuwd */}
+export const revalidate = 300 
 
 export const metadata = {
   title: "Beste tech deals van vandaag | TechTracker",

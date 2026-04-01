@@ -2,7 +2,7 @@ import Link from "next/link";
 import DealCard from "../components/DealCard";
 import { getHomepageDeals } from "../lib/deals";
 
-export const revalidate = 3600;
+export const revalidate = 300;
 
 export const metadata = {
   title: "TechTracker – Echte tech deals in Nederland",
