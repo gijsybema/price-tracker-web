@@ -11,7 +11,7 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const deals = await getHomepageDeals();
+  const { deals, error } = await getHomepageDeals();
 
   return (
     <main>
@@ -27,9 +27,10 @@ export default async function Home() {
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
-              TechTracker checkt dagelijks prijzen van populaire premium headphones in Nederland en
-              laat alleen deals zien die echt interessant zijn. Gericht op
-              premium koptelefoons, echte prijsdalingen en producten die op voorraad zijn.
+              TechTracker checkt dagelijks prijzen van populaire premium
+              headphones in Nederland en laat alleen deals zien die echt
+              interessant zijn. Gericht op premium koptelefoons, echte
+              prijsdalingen en producten die op voorraad zijn.
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
@@ -50,20 +51,26 @@ export default async function Home() {
               </a>
             </div>
           </div>
-        <div className="mt-14 grid gap-4 md:grid-cols-3"> 
-          <div className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm"> 
-            <p className="text-sm text-slate-300">Focus</p> 
-            <p className="mt-2 text-2xl font-semibold">Premium headphones</p> 
-          </div> 
-            <div className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm"> 
-              <p className="text-sm text-slate-300">Detectie</p> 
-              <p className="mt-2 text-2xl font-semibold">Dagelijkse prijschecks</p> 
-            </div> 
-            <div className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm"> 
-              <p className="text-sm text-slate-300">Filter</p> 
-              <p className="mt-2 text-2xl font-semibold">Alleen grote prijsdalingen</p> 
-            </div> 
-          </div> 
+
+          <div className="mt-14 grid gap-4 md:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm">
+              <p className="text-sm text-slate-300">Focus</p>
+              <p className="mt-2 text-2xl font-semibold">
+                Premium headphones</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm">
+              <p className="text-sm text-slate-300">Detectie</p>
+              <p className="mt-2 text-2xl font-semibold">
+                Dagelijkse prijschecks
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm">
+              <p className="text-sm text-slate-300">Filter</p>
+              <p className="mt-2 text-2xl font-semibold">
+                Alleen grote prijsdalingen
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -74,18 +81,30 @@ export default async function Home() {
               Beste headphone deals op dit moment
             </h2>
             <p className="mt-3 text-gray-600">
-              De 3 sterkste actuele prijsdalingen op basis van de hoogste prijs in de afgelopen 30 dagen.
+              De 3 sterkste actuele prijsdalingen op basis van de hoogste prijs
+              in de afgelopen 30 dagen.
             </p>
           </div>
 
-          <Link href="/deals" className="text-sm font-medium text-black underline">
+          <Link
+            href="/deals"
+            className="text-sm font-medium text-black underline"
+          >
             Bekijk alle deals
           </Link>
         </div>
 
-        {deals.length === 0 ? (
+        {error ? (
           <div className="mt-10 rounded-2xl border bg-white p-8 text-center shadow-sm">
-            <p className="text-lg text-gray-600">Geen interessante deals vandaag.</p>
+            <p className="text-lg text-gray-600">
+              Deals zijn tijdelijk niet beschikbaar.
+            </p>
+          </div>
+        ) : deals.length === 0 ? (
+          <div className="mt-10 rounded-2xl border bg-white p-8 text-center shadow-sm">
+            <p className="text-lg text-gray-600">
+              Er zijn momenteel geen deals.
+            </p>
           </div>
         ) : (
           <div className="mt-10 grid gap-6 md:grid-cols-3">

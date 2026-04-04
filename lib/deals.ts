@@ -12,30 +12,67 @@ export type Deal = {
 };
 
 export async function getDealCandidates(): Promise<Deal[]> {
-  const result = await pool.query(`
-    SELECT *
-    FROM deal_candidates
-  `);
-  console.log("deal_candidates rows:", result.rows.length);
-  return result.rows;
+  try {
+    const result = await pool.query(`
+      SELECT *
+      FROM deal_candidates
+    `);
+    console.log("deal_candidates rows:", result.rows.length);
+    return result.rows;
+  } catch (error) {
+    console.error("Database error in getDealCandidates:", error);
+    return [];
+  }
 }
 
-export async function getDealpageDeals(): Promise<Deal[]> {
-  const result = await pool.query(`
-    SELECT *
-    FROM dealpage_topdeals
-  `);
+export async function getDealpageDeals(): Promise<{
+  deals: Deal[];
+  error: boolean;
+}> {
+  try {
+    const result = await pool.query(`
+      SELECT *
+      FROM dealpage_topdeals
+    `);
 
-  console.log("dealpage_topdeals rows:", result.rows.length);
-  return result.rows;
+    console.log("dealpage_topdeals rows:", result.rows.length);
+
+    return {
+      deals: result.rows,
+      error: false,
+    };
+  } catch (error) {
+    console.error("Database error in getDealpageDeals:", error);
+
+    return {
+      deals: [],
+      error: true,
+    };
+  }
 }
 
-export async function getHomepageDeals(): Promise<Deal[]> {
-  const result = await pool.query(`
-    SELECT *
-    FROM homepage_topdeals
-  `);
-  console.log("homepage_topdeals rows:", result.rows.length);
-  return result.rows;
-}
+export async function getHomepageDeals(): Promise<{
+  deals: Deal[];
+  error: boolean;
+}> {
+  try {
+    const result = await pool.query(`
+      SELECT *
+      FROM homepage_topdeals
+    `);
 
+    console.log("homepage_topdeals rows:", result.rows.length);
+
+    return {
+      deals: result.rows,
+      error: false,
+    };
+  } catch (error) {
+    console.error("Database error in getHomepageDeals:", error);
+
+    return {
+      deals: [],
+      error: true,
+    };
+  }
+}

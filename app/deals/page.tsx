@@ -11,9 +11,7 @@ export const metadata = {
 }
 
 export default async function DealsPage() {
-  const deals = await getDealpageDeals();
-
-  console.log("DealsPage deals:", deals.length, deals);
+  const { deals, error } = await getDealpageDeals();
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-16">
@@ -25,23 +23,28 @@ export default async function DealsPage() {
           Een overzicht van recente deals die door de tracker zijn gedetecteerd.
         </p>
       </div>
-        
-      {/* 👇 CONDITIONAL RENDERING */}
-      {deals.length === 0 ? (
+
+      {error ? (
+        <div className="mt-16 text-center">
+          <p className="text-lg text-gray-600">
+            Deals zijn tijdelijk niet beschikbaar.
+          </p>
+        </div>
+      ) : deals.length === 0 ? (
         <div className="mt-16 text-center">
           <p className="text-lg text-gray-600">
             Geen interessante deals vandaag.
           </p>
           <p className="mt-2 text-sm text-gray-500">
-            Wil je automatisch updates ontvangen?{" "} 
+            Wil je automatisch updates ontvangen?{" "}
             <a
-            href="https://t.me/NLHeadphoneDeals"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline text-black "
-          >
-            <u><strong>Volg ons op Telegram</strong></u>
-          </a>
+              href="https://t.me/NLHeadphoneDeals"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline text-black"
+            >
+              <strong>Volg ons op Telegram</strong>
+            </a>
           </p>
         </div>
       ) : (
