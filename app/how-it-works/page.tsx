@@ -1,3 +1,9 @@
+export const metadata = {
+  title: "Alleen echte prijsdalingen voor premium tech producten| Hoe TechTracker werkt",
+  description:
+    "Ontdek hoe TechTracker prijdata analyseert en alleen echte deals toont. Transparante prijsvergelijking.",
+}
+
 export default function HowItWorksPage() {
     return (
       <main className="mx-auto max-w-3xl px-6 py-20">
@@ -10,9 +16,9 @@ export default function HowItWorksPage() {
           <p className="mt-6 text-lg leading-8 text-gray-600">
           TechTracker is geen webshop. De site verzamelt en analyseert prijsdata van externe retailers. 
           Wanneer je op een deal klikt, word je doorgestuurd naar de betreffende webshop
-            Techtracker is gebouwd om echte prijsdalingen op premium headphones en tech producten
-            zichtbaar te maken. Momenteel worden prijzen gemonitord bij retailers zoals Coolblue, 
-            met mogelijk uitbreiding in de toekomst.
+          Techtracker is gebouwd om echte prijsdalingen op premium headphones en tech producten
+          zichtbaar te maken. Momenteel worden prijzen gemonitord bij retailers zoals Coolblue, 
+          met mogelijk uitbreiding in de toekomst.
           </p>
         </div>
   

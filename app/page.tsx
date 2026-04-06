@@ -5,9 +5,9 @@ import { getHomepageDeals } from "../lib/deals";
 export const revalidate = 300;
 
 export const metadata = {
-  title: "TechTracker – Echte tech deals in Nederland",
+  title: "TechTracker – Beste tech deals en kortingen in Nederland",
   description:
-    "Ontdek echte prijsdalingen op premium tech producten. Dagelijkse updates.",
+    "Ontdek echte prijsdalingen op premium tech producten in Nederland. Dagelijkse updates van prijzen.",
 };
 
 export default async function Home() {

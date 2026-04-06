@@ -5,9 +5,9 @@ import { getDealpageDeals } from "../../lib/deals";
 export const revalidate = 300 
 
 export const metadata = {
-  title: "Beste tech deals van vandaag | TechTracker",
+  title: "Beste tech deals van vandaag (tot €300 korting) | TechTracker",
   description:
-    "Bekijk de grootste prijsdalingen op premium tech producten in Nederland. Dagelijkse updates.",
+    "Ontdek de grootste prijsdalingen op premium tech producten in Nederland. Dagelijkse updates van echte deals.",
 }
 
 export default async function DealsPage() {
@@ -20,7 +20,8 @@ export default async function DealsPage() {
           Grootste prijsdalingen
         </h1>
         <p className="mt-4 text-lg text-gray-600">
-          Een overzicht van recente deals die door de tracker zijn gedetecteerd.
+          Een overzicht van recente deals die door TechTracker zijn gedetecteerd. 
+          TechTracker verkoopt zelf geen producten. Je wordt doorgestuurd naar de webshop.
         </p>
       </div>
 

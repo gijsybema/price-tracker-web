@@ -1,3 +1,9 @@
+export const metadata = {
+  title: "Over TechTracker – Data om echte tech deals te vinden",
+  description:
+    "TechTracker is een data-gedreven project dat prijsontwikkelingen van tech producten in Nederland analyseert en echte tech deals zichtbaar maakt.",
+}
+
 export default function AboutPage() {
     return (
       <main className="mx-auto max-w-4xl px-6 py-16">
