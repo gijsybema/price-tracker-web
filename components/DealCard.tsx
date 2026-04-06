@@ -1,3 +1,9 @@
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+  }
+}
+
 import type { Deal } from "../lib/deals";
 
 function formatDateNL(dateString: string) {
@@ -18,6 +24,13 @@ export default function DealCard({ deal }: { deal: Deal }) {
       href={deal.url}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={() => {
+        window.gtag?.("event", "click_deal", {
+          product_name: deal.name,
+          price: deal.current_price,
+          deal_id: deal.id,
+        });
+      }}
       className="group block rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-4">
