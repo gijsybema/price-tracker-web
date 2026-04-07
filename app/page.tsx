@@ -96,27 +96,6 @@ export default async function Home() {
         )}
       </section>
 
-      <section className="bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-12">
-          <div className="max-w-2xl">
-            <h2 className="text-lg font-semibold text-gray-900">
-              Wat wij bewust niet tonen
-            </h2>
-
-            <ul className="mt-4 space-y-3 text-sm text-gray-600 md:text-base">
-              <li>✕ Nepkortingen met misleidende van/voor-prijzen</li>
-              <li>✕ Kleine prijsdalingen die nauwelijks verschil maken</li>
-              <li>✕ Oude deals die niet meer relevant zijn</li>
-              <li>✕ Vergelijkingen met adviesprijzen</li>
-            </ul>
-            <p className="mt-5 text-sm font-medium text-gray-900 md:text-base">
-            Je ziet hier alleen prijsdalingen die écht de moeite waard zijn.
-            </p>
-          </div>
-        </div>
-      </section>
-
-
       <section className="bg-slate-700 text-white">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <div className="mb-8 max-w-2xl">
@@ -150,6 +129,24 @@ export default async function Home() {
               </p>
             </div>
           </div>
+          <div className="mx-auto max-w-6xl px-6 py-12">
+          <div className="max-w-2xl">
+            <h2 className="text-lg font-semibold text-slate-300">
+              Wat wij bewust niet tonen
+            </h2>
+
+            <ul className="mt-4 space-y-3 text-sm text-slate-300 md:text-base">
+              <li>✕ Nepkortingen met misleidende van/voor-prijzen</li>
+              <li>✕ Kleine prijsdalingen die nauwelijks verschil maken</li>
+              <li>✕ Oude deals die niet meer relevant zijn</li>
+              <li>✕ Vergelijkingen met adviesprijzen</li>
+            </ul>
+            <p className="mt-5 text-sm font-medium text-slate-300 md:text-base">
+            Je ziet hier alleen prijsdalingen die écht de moeite waard zijn.
+            </p>
+          </div>
+        </div>
+          
         </div>
       </section>
 
