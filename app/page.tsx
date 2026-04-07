@@ -16,7 +16,7 @@ export default async function Home() {
   return (
     <main>
       <section className="bg-gradient-to-b from-slate-900 via-slate-800 to-slate-700 text-white">
-        <div className="mx-auto max-w-6xl px-6 py-20 md:py-28">
+        <div className="mx-auto max-w-6xl px-6 py-16 md:py-16">
           <div className="max-w-3xl">
             <p className="mb-4 inline-block rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm text-white/80">
             Dagelijks bijgewerkte headphone deals in Nederland
@@ -44,29 +44,10 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="mt-14 grid gap-4 md:grid-cols-3">
-            <div className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm">
-              <p className="text-sm text-slate-300">Focus</p>
-              <p className="mt-2 text-2xl font-semibold">
-                Premium headphones</p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm">
-              <p className="text-sm text-slate-300">Detectie</p>
-              <p className="mt-2 text-2xl font-semibold">
-                Dagelijkse prijschecks
-              </p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm">
-              <p className="text-sm text-slate-300">Filter</p>
-              <p className="mt-2 text-2xl font-semibold">
-                Alleen grote prijsdalingen
-              </p>
-            </div>
-          </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-16">
+      <section className="mx-auto max-w-6xl px-6 py-8">
         <div className="flex items-end justify-between gap-4">
           <div>
             <h2 className="text-3xl font-bold tracking-tight text-gray-900">
@@ -110,7 +91,7 @@ export default async function Home() {
         )}
       </section>
 
-      <section className="bg-slate-900 text-white">
+      <section className="bg-slate-700 text-white">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <div className="mb-8 max-w-2xl">
             <h2 className="text-2xl font-bold tracking-tight">
