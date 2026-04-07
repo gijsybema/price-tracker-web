@@ -110,31 +110,40 @@ export default async function Home() {
         )}
       </section>
 
-      <section className="bg-gradient-to-b from-white to-slate-50">
-      <div className="mx-auto max-w-6xl px-6 py-16">
-        <div className="grid gap-4 md:grid-cols-3">
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <p className="text-sm text-gray-500">Selectie</p>
-            <p className="mt-2 text-2xl font-semibold text-gray-900">
-              Gericht op premium koptelefoons
+      <section className="bg-slate-900 text-white">
+        <div className="mx-auto max-w-6xl px-6 py-16">
+          <div className="mb-8 max-w-2xl">
+            <h2 className="text-2xl font-bold tracking-tight">
+              Waarom TechTracker
+            </h2>
+            <p className="mt-3 text-slate-300">
+              Een selectie van premium headphone deals, gebaseerd op dagelijkse prijscontroles en relevante prijsbewegingen.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <p className="text-sm text-gray-500">Prijsdata</p>
-            <p className="mt-2 text-2xl font-semibold text-gray-900">
-              Dagelijks gecontroleerde prijzen
-            </p>
-          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="text-sm text-slate-300">Selectie</p>
+              <p className="mt-2 text-2xl font-semibold">
+                Gericht op premium koptelefoons
+              </p>
+            </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <p className="text-sm text-gray-500">Relevantie</p>
-            <p className="mt-2 text-2xl font-semibold text-gray-900">
-              Alleen opvallende prijsdalingen
-            </p>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="text-sm text-slate-300">Prijsdata</p>
+              <p className="mt-2 text-2xl font-semibold">
+                Dagelijks gecontroleerde prijzen
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="text-sm text-slate-300">Relevantie</p>
+              <p className="mt-2 text-2xl font-semibold">
+                Alleen opvallende prijsdalingen
+              </p>
+            </div>
           </div>
         </div>
-      </div> 
       </section>
 
     </main>
