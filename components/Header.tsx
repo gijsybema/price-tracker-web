@@ -14,14 +14,6 @@ export default function Header() {
           <Link href="/how-it-works">Hoe werkt het</Link>
           <Link href="/about">Over</Link>
 
-          <a
-            href="https://t.me/NLHeadphoneDeals"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ml-4 rounded-lg bg-black px-4 py-2 text-white text-sm font-medium"
-          >
-          Telegram
-          </a>
         </nav>
       </div>
     </header>

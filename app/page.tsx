@@ -5,9 +5,9 @@ import { getHomepageDeals } from "../lib/deals";
 export const revalidate = 300;
 
 export const metadata = {
-  title: "TechTracker – Beste tech deals en kortingen in Nederland",
+  title: "Beste headphone deals in Nederland | TechTracker",
   description:
-    "Ontdek echte prijsdalingen op premium tech producten in Nederland. Dagelijkse updates van prijzen.",
+    "Ontdek de beste headphone deals in Nederland. TechTracker volgt dagelijks prijzen van premium koptelefoons en laat de grootste prijsdalingen zien.",
 };
 
 export default async function Home() {
@@ -19,18 +19,18 @@ export default async function Home() {
         <div className="mx-auto max-w-6xl px-6 py-20 md:py-28">
           <div className="max-w-3xl">
             <p className="mb-4 inline-block rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm text-white/80">
-              Nederlandse premium headphone deal tracker
+            Dagelijks bijgewerkte headphone deals in Nederland
             </p>
 
             <h1 className="text-5xl font-bold tracking-tight md:text-6xl">
-              Beste tech deals van vandaag
+              Beste headphone deals van vandaag
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
-              TechTracker checkt dagelijks prijzen van populaire premium
-              headphones in Nederland en laat alleen deals zien die echt
-              interessant zijn. Gericht op premium koptelefoons, echte
-              prijsdalingen en producten die op voorraad zijn.
+              TechTracker volgt dagelijks prijzen van premium koptelefoons 
+              bij Nederlandse webshops en laat alleen deals zien die echt
+              interessant zijn. Gericht op premium modellen van bekende merken, 
+              producten die op voorraad zijn en prijsdalingen die daadwerkelijk relevant zijn. 
             </p>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
@@ -38,17 +38,9 @@ export default async function Home() {
                 href="/deals"
                 className="rounded-xl bg-white px-6 py-3 font-medium text-slate-900 transition hover:bg-slate-100"
               >
-                Bekijk deals
+                Bekijk de beste deals
               </Link>
 
-              <a
-                href="https://t.me/NLHeadphoneDeals"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-xl border border-white/20 bg-white/10 px-6 py-3 font-medium text-white transition hover:bg-white/15"
-              >
-                Volg op Telegram
-              </a>
             </div>
           </div>
 
@@ -117,6 +109,34 @@ export default async function Home() {
           </div>
         )}
       </section>
+
+      <section className="bg-gradient-to-b from-white to-slate-50">
+      <div className="mx-auto max-w-6xl px-6 py-16">
+        <div className="grid gap-4 md:grid-cols-3">
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <p className="text-sm text-gray-500">Selectie</p>
+            <p className="mt-2 text-2xl font-semibold text-gray-900">
+              Gericht op premium koptelefoons
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <p className="text-sm text-gray-500">Prijsdata</p>
+            <p className="mt-2 text-2xl font-semibold text-gray-900">
+              Dagelijks gecontroleerde prijzen
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <p className="text-sm text-gray-500">Relevantie</p>
+            <p className="mt-2 text-2xl font-semibold text-gray-900">
+              Alleen opvallende prijsdalingen
+            </p>
+          </div>
+        </div>
+      </div> 
+      </section>
+
     </main>
   );
 }
