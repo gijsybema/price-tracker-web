@@ -78,7 +78,7 @@ export default function DealCard({ deal }: { deal: Deal }) {
       </p>
 
       <div className="mt-6 inline-flex items-center text-sm font-medium text-black">
-        Bekijk deal
+        Bekijk product op Coolblue
         <span className="ml-1 transition group-hover:translate-x-1">→</span>
       </div>
     </a>

@@ -22,16 +22,21 @@ export default async function Home() {
             Dagelijks bijgewerkte headphone deals in Nederland
             </p>
 
-            <h1 className="text-5xl font-bold tracking-tight md:text-6xl">
-              Beste headphone deals van vandaag
+            <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
+              Echte prijsdalingen op premium headphones
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
-              TechTracker volgt dagelijks prijzen van premium koptelefoons 
-              bij Nederlandse webshops en laat alleen deals zien die echt
-              interessant zijn. Gericht op premium modellen van bekende merken, 
-              producten die op voorraad zijn en prijsdalingen die daadwerkelijk relevant zijn. 
+              TechTracker volgt dagelijks prijzen van koptelefoons 
+              bij Nederlandse webshops. We tonen alleen echte prijsdalingen. 
+              Gericht op premium modellen van bekende merken. 
             </p>
+
+            <ul className="mt-8 grid gap-3 text-sm text-white/90 md:grid-cols-3 md:text-base">
+            <li>✓ Alleen echte prijsdalingen</li>
+            <li>✓ Gebaseerd op historische prijsdata</li>
+            <li>✓ Dagelijkse updates</li>
+            </ul>
 
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Link
@@ -51,7 +56,7 @@ export default async function Home() {
         <div className="flex items-end justify-between gap-4">
           <div>
             <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-              Beste headphone deals op dit moment
+              De 3 beste headphone deals op dit moment
             </h2>
             <p className="mt-3 text-gray-600">
               De 3 sterkste actuele prijsdalingen op basis van de hoogste prijs
@@ -90,6 +95,27 @@ export default async function Home() {
           </div>
         )}
       </section>
+
+      <section className="bg-white">
+        <div className="mx-auto max-w-6xl px-6 py-12">
+          <div className="max-w-2xl">
+            <h2 className="text-lg font-semibold text-gray-900">
+              Wat wij bewust niet tonen
+            </h2>
+
+            <ul className="mt-4 space-y-3 text-sm text-gray-600 md:text-base">
+              <li>✕ Nepkortingen met misleidende van/voor-prijzen</li>
+              <li>✕ Kleine prijsdalingen die nauwelijks verschil maken</li>
+              <li>✕ Oude deals die niet meer relevant zijn</li>
+              <li>✕ Vergelijkingen met adviesprijzen</li>
+            </ul>
+            <p className="mt-5 text-sm font-medium text-gray-900 md:text-base">
+            Je ziet hier alleen prijsdalingen die écht de moeite waard zijn.
+            </p>
+          </div>
+        </div>
+      </section>
+
 
       <section className="bg-slate-700 text-white">
         <div className="mx-auto max-w-6xl px-6 py-16">
