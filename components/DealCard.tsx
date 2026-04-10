@@ -65,7 +65,7 @@ export default function DealCard({ deal }: { deal: Deal }) {
             </span>
           </div>
 
-          <h2 className="mt-2 text-base font-semibold leading-snug text-gray-900 transition group-hover:text-black sm:text-lg lg:text-xl">
+          <h2 className="mt-2 text-base font-semibold leading-snug text-gray-900 transition group-hover:text-black">
             {deal.name}
           </h2>
         </div>
@@ -74,8 +74,8 @@ export default function DealCard({ deal }: { deal: Deal }) {
       {/* Onderste deel: altijd onderaan */}
       <div className="mt-auto pt-6">
         <div className="rounded-xl bg-blue-50 p-4">
-          <p className="text-sm font-medium text-blue-800">Bespaar</p>
-          <p className="mt-1 text-2xl font-bold text-blue-700">
+          <p className="text-md font-bold text-blue-800">Bespaar</p>
+          <p className="mt-1 text-3xl font-bold text-blue-700">
             €{Number(deal.price_diff).toFixed(0)}
           </p>
           <p className="mt-2 text-sm text-blue-800">
@@ -84,7 +84,7 @@ export default function DealCard({ deal }: { deal: Deal }) {
         </div>
 
         <div className="mt-6 flex items-end gap-3">
-          <span className="text-3xl font-bold text-gray-900">
+          <span className="text-2xl font-bold text-gray-900">
             €{Number(deal.current_price).toFixed(0)}
           </span>
           <span className="text-lg text-gray-400 line-through">
