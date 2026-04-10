@@ -63,13 +63,6 @@ export default async function Home() {
               in de afgelopen 30 dagen.
             </p>
           </div>
-
-          <Link
-            href="/deals"
-            className="text-sm font-medium text-black underline"
-          >
-            Bekijk alle deals
-          </Link>
         </div>
 
         {error ? (
@@ -85,13 +78,24 @@ export default async function Home() {
             </p>
           </div>
         ) : (
-          <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {deals.map((deal) => (
-              <DealCard
-                key={`${deal.id}-${deal.price_level_since}`}
-                deal={deal}
-              />
-            ))}
+          <div className="mt-10">
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {deals.map((deal) => (
+                <DealCard
+                  key={`${deal.id}-${deal.price_level_since}`}
+                  deal={deal}
+                />
+              ))}
+            </div>
+
+            <div className="mt-8 flex justify-center">
+              <Link
+                href="/deals"
+                className="rounded-xl bg-slate-900 px-6 py-3 font-medium text-white transition hover:bg-slate-800"
+              >
+                Bekijk alle deals
+              </Link>
+            </div>
           </div>
         )}
       </section>
