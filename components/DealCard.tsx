@@ -74,11 +74,11 @@ export default function DealCard({ deal }: { deal: Deal }) {
       {/* Onderste deel: altijd onderaan */}
       <div className="mt-auto pt-6">
         <div className="rounded-xl bg-blue-50 p-4">
-          <p className="text-md font-bold text-blue-800">Bespaar</p>
+          <p className="text-md font-bold text-blue-700">Bespaar</p>
           <p className="mt-1 text-3xl font-bold text-blue-700">
             €{Number(deal.price_diff).toFixed(0)}
           </p>
-          <p className="mt-2 text-sm text-blue-800">
+          <p className="mt-2 text-sm text-blue-700">
             ten opzichte van de hoogste prijs in de afgelopen 30 dagen
           </p>
         </div>
