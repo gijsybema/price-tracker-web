@@ -65,7 +65,7 @@ export default function DealCard({ deal }: { deal: Deal }) {
             </span>
           </div>
 
-          <h2 className="mt-2 text-base font-semibold leading-snug text-gray-900 transition group-hover:text-black">
+          <h2 className="mt-2 text-lg font-semibold leading-snug text-gray-900 transition group-hover:text-black">
             {deal.name}
           </h2>
         </div>

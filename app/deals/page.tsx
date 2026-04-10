@@ -5,7 +5,7 @@ import { getDealpageDeals } from "../../lib/deals";
 export const revalidate = 300 
 
 export const metadata = {
-  title: "Beste headphone deals van vandaag (tot €169 korting) | TechTracker",
+  title: "Beste headphone deals van vandaag | TechTracker",
   description:
     "Ontdek de grootste prijsdalingen op premium hoofdtelefoons in Nederland. Dagelijkse updates van echte deals.",
 }
