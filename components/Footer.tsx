@@ -23,7 +23,7 @@ export default function Footer() {
               <span>Eerlijk & onafhankelijk</span>
             </h3>
             <div className="mt-4 space-y-3 text-sm leading-7 text-gray-600">
-              <p>Alleen echte prijsdalingen op basis van prijsdata.</p>
+              <p>Alleen echte prijsdalingen op basis van historische prijsdata.</p>
               <p>
                 TechTracker verkoopt zelf geen producten. Je wordt doorgestuurd
                 naar de webshop.

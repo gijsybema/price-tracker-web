@@ -23,7 +23,7 @@ export default function DealCard({ deal }: { deal: Deal }) {
 
   return (
     <a
-      href={deal.url}
+      href={deal.product_url}
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => {
@@ -35,6 +35,7 @@ export default function DealCard({ deal }: { deal: Deal }) {
       }}
       className="group block rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
     >
+      {/* Top */}
       <div className="flex items-start justify-between gap-4">
         <div>
           {isBigSaving && (
@@ -53,17 +54,30 @@ export default function DealCard({ deal }: { deal: Deal }) {
         </span>
       </div>
 
+      {/* Image */}
+      {deal.image_url && (
+        <div className="mt-5 flex h-20 items-center justify-center overflow-hidden rounded-lg bg-gray-50 p-2">
+          <img
+            src={deal.image_url}
+            alt={deal.name}
+            className="max-h-full w-auto max-w-full object-contain"
+            loading="lazy"
+          />
+        </div>
+      )}
+
+      {/* Savings block */}
       <div className="mt-6 rounded-xl bg-blue-50 p-4">
         <p className="text-sm font-medium text-blue-800">Bespaar</p>
         <p className="mt-1 text-2xl font-bold text-blue-700">
           €{Number(deal.price_diff).toFixed(0)}
         </p>
-          <p className="mt-2 text-sm text-blue-800">
+        <p className="mt-2 text-sm text-blue-800">
           ten opzichte van de hoogste prijs in de afgelopen 30 dagen
         </p>
-
       </div>
 
+      {/* Prices */}
       <div className="mt-6 flex items-end gap-3">
         <span className="text-3xl font-bold text-gray-900">
           €{Number(deal.current_price).toFixed(0)}

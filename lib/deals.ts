@@ -3,11 +3,14 @@ import { pool } from "./db";
 export type Deal = {
   id: number;
   name: string;
+  brand: string;
+  category: string | null;
+  product_url: string;
+  image_url: string | null;
   current_price: number;
   previous_price: number;
   price_diff: number;
   price_drop_pct: number;
-  url: string;
   price_level_since: string;
 };
 
