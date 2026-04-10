@@ -85,7 +85,7 @@ export default async function Home() {
             </p>
           </div>
         ) : (
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
+          <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {deals.map((deal) => (
               <DealCard
                 key={`${deal.id}-${deal.price_level_since}`}
