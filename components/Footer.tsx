@@ -34,9 +34,18 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 flex flex-col gap-4 border-t border-gray-200 pt-6 md:flex-row md:items-center md:justify-between">
-          <p className="text-xs leading-6 text-gray-400">
-            © {new Date().getFullYear()} TechTracker. Alle rechten voorbehouden.
+        <div className="text-xs leading-6 text-gray-400">
+          <p>© {new Date().getFullYear()} TechTracker. Alle rechten voorbehouden.</p>
+          <p className="mt-1">
+            Contact:{" "}
+            <a
+              href="mailto:info@techtracker.nl"
+              className="hover:underline"
+            >
+              info@techtracker.nl
+            </a>
           </p>
+        </div>
 
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-gray-500 md:justify-end">
             <Link href="/privacy" className="transition hover:text-gray-900">
@@ -44,6 +53,9 @@ export default function Footer() {
             </Link>
             <Link href="/terms" className="transition hover:text-gray-900">
               Algemene voorwaarden
+            </Link>
+            <Link href="/contact" className="transition hover:text-gray-900">
+              Contact
             </Link>
           </div>
         </div>
