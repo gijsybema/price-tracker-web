@@ -5,9 +5,9 @@ import { getHomepageDeals } from "../lib/deals";
 export const revalidate = 300;
 
 export const metadata = {
-  title: "Beste headphone deals in Nederland | TechTracker",
+  title: "Beste audio deals in Nederland | TechTracker",
   description:
-    "Ontdek de beste headphone deals in Nederland. TechTracker volgt dagelijks prijzen van premium koptelefoons en laat de grootste prijsdalingen zien.",
+    "Ontdek de beste audio deals in Nederland. TechTracker volgt dagelijks prijzen van koptelefoons, earbuds, speakers en soundbars en laat de grootste prijsdalingen zien.",
 };
 
 export default async function Home() {
@@ -19,17 +19,17 @@ export default async function Home() {
         <div className="mx-auto max-w-6xl px-6 py-16 md:py-16">
           <div className="max-w-3xl">
             <p className="mb-4 inline-block rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm text-white/80">
-            Dagelijks bijgewerkte headphone deals in Nederland
+            Dagelijks bijgewerkte audio deals in Nederland
             </p>
 
             <h1 className="text-4xl font-bold tracking-tight md:text-6xl">
-              Echte prijsdalingen op premium headphones
+              Echte prijsdalingen op premium audioproducten
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
-              TechTracker volgt dagelijks prijzen van koptelefoons 
-              bij Nederlandse webshops. We tonen alleen echte prijsdalingen. 
-              Gericht op premium modellen van bekende merken. 
+              TechTracker volgt dagelijks prijzen van koptelefoons, earbuds, speakers en soundbars
+              bij Nederlandse webshops. We tonen alleen echte prijsdalingen.
+              Gericht op premium modellen van bekende merken.
             </p>
 
             <ul className="mt-8 grid gap-3 text-sm text-white/90 md:grid-cols-3 md:text-base">
@@ -56,7 +56,7 @@ export default async function Home() {
         <div className="flex items-end justify-between gap-4">
           <div>
             <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-              De 3 beste headphone deals op dit moment
+              De 3 beste audio deals op dit moment
             </h2>
             <p className="mt-3 text-gray-600">
               De 3 sterkste actuele prijsdalingen op basis van de hoogste prijs
@@ -107,7 +107,7 @@ export default async function Home() {
               Waarom TechTracker
             </h2>
             <p className="mt-3 text-slate-300">
-              Een selectie van premium headphone deals, gebaseerd op dagelijkse prijscontroles en relevante prijsbewegingen.
+              Een selectie van premium audio deals, gebaseerd op dagelijkse prijscontroles en relevante prijsbewegingen.
             </p>
           </div>
 
@@ -115,7 +115,7 @@ export default async function Home() {
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
               <p className="text-sm text-slate-300">Selectie</p>
               <p className="mt-2 text-2xl font-semibold">
-                Gericht op premium koptelefoons
+                Koptelefoons, earbuds, speakers en soundbars
               </p>
             </div>
 

@@ -5,9 +5,9 @@ import { getDealpageDeals } from "../../lib/deals";
 export const revalidate = 300 
 
 export const metadata = {
-  title: "Beste headphone deals van vandaag | TechTracker",
+  title: "Beste audio deals van vandaag | TechTracker",
   description:
-    "Ontdek de grootste prijsdalingen op premium hoofdtelefoons in Nederland. Dagelijkse updates van echte deals.",
+    "Ontdek de grootste prijsdalingen op premium audioproducten in Nederland. Dagelijkse updates van echte deals.",
 }
 
 export default async function DealsPage() {
@@ -17,7 +17,7 @@ export default async function DealsPage() {
     <main className="mx-auto max-w-6xl px-6 py-16">
       <div className="max-w-2xl">
         <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-          Grootste prijsdalingen van headphones
+          Grootste prijsdalingen van audioproducten
         </h1>
         <p className="mt-4 text-lg text-gray-600">
           Een overzicht van recente deals die door TechTracker zijn gedetecteerd. 
@@ -35,17 +35,6 @@ export default async function DealsPage() {
         <div className="mt-16 text-center">
           <p className="text-lg text-gray-600">
             Geen interessante deals vandaag.
-          </p>
-          <p className="mt-2 text-sm text-gray-500">
-            Wil je automatisch updates ontvangen?{" "}
-            <a
-              href="https://t.me/NLHeadphoneDeals"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline text-black"
-            >
-              <strong>Volg ons op Telegram</strong>
-            </a>
           </p>
         </div>
       ) : (

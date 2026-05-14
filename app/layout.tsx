@@ -6,8 +6,8 @@ import Footer from "../components/Footer";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
-  title: "Headphone Deals Tracker",
-  description: "Track prijsdalingen van premium headphones in Nederland",
+  title: "Audio Deals Tracker",
+  description: "Track prijsdalingen van premium audioproducten in Nederland",
 };
 
 export default function RootLayout({
