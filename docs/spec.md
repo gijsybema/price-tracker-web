@@ -195,33 +195,33 @@ Search accessible from header on all pages.
 
 | ID | Phase | Task | Done |
 |---|---|---|---|
-| T01 | 1 — Foundation | Fix localhost display bug — remove dark mode media query and dead font variables from `globals.css` | ☑ |
-| T02 | 1 — Foundation | Document `.env.local` setup in README | ☐ |
-| T03 | 1 — Foundation | Add `category`, `slug`, `is_active` to deal query functions | ☐ |
-| T04 | 1 — Foundation | Verify DB views exclude inactive products | ☐ |
-| T05 | 2 — Product pages | `lib/products.ts` — `getProductBySlug(category, slug)` | ☐ |
-| T06 | 2 — Product pages | `lib/products.ts` — `getPriceHistory(productId, days)` | ☐ |
-| T07 | 2 — Product pages | `app/[category]/[slug]/page.tsx` — product detail page | ☐ |
-| T08 | 2 — Product pages | `components/PriceHistoryChart.tsx` — line chart with 60/90 toggle | ☐ |
-| T09 | 2 — Product pages | `components/SpecsTable.tsx` — per-category specs renderer | ☐ |
-| T10 | 2 — Product pages | Inactive product notice + category link | ☐ |
-| T11 | 3 — Category pages | `lib/products.ts` — `getProductsByCategory(category)` | ☐ |
-| T12 | 3 — Category pages | `app/[category]/page.tsx` — category listing page | ☐ |
-| T13 | 3 — Category pages | `components/BrandFilter.tsx` — client component | ☐ |
-| T14 | 3 — Category pages | `components/SortSelect.tsx` — client component | ☐ |
-| T15 | 3 — Category pages | Deal badge component | ☐ |
-| T16 | 4 — Nav & overview | Update `components/Header.tsx` — new nav + search input | ☐ |
-| T17 | 4 — Nav & overview | `app/products/page.tsx` — category overview page | ☐ |
-| T18 | 5 — Search | DB: add `tsvector` index (coordinate with backend) | ☐ |
-| T19 | 5 — Search | `app/api/search/route.ts` — search route handler | ☐ |
-| T20 | 5 — Search | `lib/search.ts` — `searchProducts(query)` | ☐ |
-| T21 | 5 — Search | Search results UI (dropdown or `/search?q=` page) | ☐ |
-| T22 | 6 — Deals update | Add category tabs to `app/deals/page.tsx` | ☐ |
-| T23 | 6 — Deals update | Update `lib/deals.ts` to support category filter param | ☐ |
-| T24 | 6 — Deals update | Add "Browse by category" section to `app/page.tsx` homepage | ☐ |
-| T25 | 7 — SEO | `generateMetadata()` on all new pages | ☐ |
-| T26 | 7 — SEO | Verify/update `sitemap.xml` generation | ☐ |
-| T27 | 7 — SEO | Google Search Console submission | ☐ |
+| T01 | 1 — Foundation | Fix localhost display bug — remove dark mode media query and dead font variables from `globals.css` | ✅ |
+| T02 | 1 — Foundation | Document `.env.local` setup in README | ✅ |
+| T03 | 1 — Foundation | Add `category`, `slug`, `is_active` to deal query functions | ⬜ |
+| T04 | 1 — Foundation | Verify DB views exclude inactive products | ⬜ |
+| T05 | 2 — Product pages | `lib/products.ts` — `getProductBySlug(category, slug)` | ⬜ |
+| T06 | 2 — Product pages | `lib/products.ts` — `getPriceHistory(productId, days)` | ⬜ |
+| T07 | 2 — Product pages | `app/[category]/[slug]/page.tsx` — product detail page | ⬜ |
+| T08 | 2 — Product pages | `components/PriceHistoryChart.tsx` — line chart with 60/90 toggle | ⬜ |
+| T09 | 2 — Product pages | `components/SpecsTable.tsx` — per-category specs renderer | ⬜ |
+| T10 | 2 — Product pages | Inactive product notice + category link | ⬜ |
+| T11 | 3 — Category pages | `lib/products.ts` — `getProductsByCategory(category)` | ⬜ |
+| T12 | 3 — Category pages | `app/[category]/page.tsx` — category listing page | ⬜ |
+| T13 | 3 — Category pages | `components/BrandFilter.tsx` — client component | ⬜ |
+| T14 | 3 — Category pages | `components/SortSelect.tsx` — client component | ⬜ |
+| T15 | 3 — Category pages | Deal badge component | ⬜ |
+| T16 | 4 — Nav & overview | Update `components/Header.tsx` — new nav + search input | ⬜ |
+| T17 | 4 — Nav & overview | `app/products/page.tsx` — category overview page | ⬜ |
+| T18 | 5 — Search | DB: add `tsvector` index (coordinate with backend) | ⬜ |
+| T19 | 5 — Search | `app/api/search/route.ts` — search route handler | ⬜ |
+| T20 | 5 — Search | `lib/search.ts` — `searchProducts(query)` | ⬜ |
+| T21 | 5 — Search | Search results UI (dropdown or `/search?q=` page) | ⬜ |
+| T22 | 6 — Deals update | Add category tabs to `app/deals/page.tsx` | ⬜ |
+| T23 | 6 — Deals update | Update `lib/deals.ts` to support category filter param | ⬜ |
+| T24 | 6 — Deals update | Add "Browse by category" section to `app/page.tsx` homepage | ⬜ |
+| T25 | 7 — SEO | `generateMetadata()` on all new pages | ⬜ |
+| T26 | 7 — SEO | Verify/update `sitemap.xml` generation | ⬜ |
+| T27 | 7 — SEO | Google Search Console submission | ⬜ |
 
 ---
 

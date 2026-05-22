@@ -22,6 +22,7 @@
 - Before implementing any task involving a state change or status transition: map all consumers/readers of that state first, and surface threshold and policy questions (when does the transition trigger? how many times?) before writing any code — one short clarifying exchange is cheaper than a full rewrite
 - When a task involves side effects, do not start immediately after confirmation — pause and explicitly verify assumptions before proceeding
 - Never modify `docs/spec.md` without explicit user confirmation; always show proposed changes and wait for approval
+- Do not mark tasks done in `docs/spec.md` during implementation; only mark them done at wrap-up or on explicit user confirmation
 
 ## Output Style
 - Be concise and structured

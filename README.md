@@ -1,5 +1,17 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Local Development Setup
+
+Before running the dev server, create a `.env.local` file in the project root with the database connection string:
+
+```bash
+DATABASE_URL=postgresql://<user>:<password>@<host>:<port>/<database>
+```
+
+This file is gitignored and must be created manually. Use the production read-only connection string (ask a team member) or point it at a local Postgres instance seeded with the schema from `docs/spec.md`.
+
+The app will fail to fetch any data without this variable set.
+
 ## Getting Started
 
 First, run the development server:
