@@ -1,22 +1,65 @@
 # CLAUDE.md
 
 ## Core Rules
-- Always plan before coding
-- Never implement more than one slice at a time
-- Keep changes minimal and focused
+- In FULL mode: always plan before coding and wait for explicit approval before implementing
+- In NORMAL mode: plan is optional — if the task is clear, proceed directly to implementation; do not wait for approval between steps
+- Work in small, clearly defined steps — never implement more than one task or slice at a time
+- Keep changes minimal and focused; do not modify unrelated files
 - Ask for clarification if requirements are unclear
+- Be explicit about assumptions and decisions
 
-## Workflow Constraint
-Interview Phase → Task Loop → Slice Loop
+## Working Style
+- Follow existing architecture and patterns
+- Reuse existing components where possible
+- Do not refactor or rename unless necessary
+- Avoid unnecessary complexity or over-engineering
+- Avoid introducing new dependencies unless justified
+- Do not expand scope beyond the current task
+- Preserve backward compatibility unless explicitly told otherwise
+- Consider edge cases, validation, error handling, security, privacy, and performance
+- Add tests only when directly relevant
+- Add comments only when they improve clarity
+- Before implementing any task involving a state change or status transition: map all consumers/readers of that state first, and surface threshold and policy questions (when does the transition trigger? how many times?) before writing any code — one short clarifying exchange is cheaper than a full rewrite
+- When a task involves side effects, do not start immediately after confirmation — pause and explicitly verify assumptions before proceeding
+- Never modify `docs/spec.md` without explicit user confirmation; always show proposed changes and wait for approval
 
-Follow these workflows:
+## Output Style
+- Be concise and structured
+- Do not dump large amounts of code unless necessary
+- Explain key decisions briefly
 
-### Interview Phase:
-Interview → Generate spec → Save spec
+## Workflow Modes
 
-### Task Loop:
-Select Task → Define → Plan → (Slice Loop) → Complete Task → Next Task
+State the mode at the start of each task. If not stated, default to NORMAL silently — do not ask.
 
-### Slice Loop:
-Implement → Verify → Review → Fix → Repeat (until task is done)
+### FAST
+**When:** single file, no logic risk, obvious change (rename, typo, config tweak)
+```
+Implement → Commit
+```
+No prompt needed — just describe the change and do it.
 
+### NORMAL
+**When:** features, bug fixes, clear scope, familiar code
+```
+Implement → Commit
+```
+- Plan is optional: if the task is clear, skip straight to implementation; run @plan.md only if needed
+- Verify runs inline after each task (part of @implement.md)
+
+### FULL
+**When:** architecture changes, cross-cutting refactors, security-sensitive, unfamiliar area, high risk
+```
+Plan → Approve → Implement → Verify → Wrap-up → Commit
+```
+- Plan waits for explicit approval before implementing
+- If the plan has more than 5 slices, flag it and suggest splitting into two tasks
+- If a slice reveals an invalid assumption or missing dependency, stop, flag it, and re-run @plan.md before continuing
+- Verify runs a thorough pass via @verify.md
+- Wrap-up is expected
+
+### Escalation
+If scope or risk grows beyond the chosen mode mid-task: stop, state the new mode, and re-run @plan.md before continuing. Do not implement further until the new plan is approved.
+
+### Manual Testing Handoff
+If verification cannot be completed (no prod DB access, UI interaction required, external service needed, etc.): state what cannot be verified, list exact test scenarios (steps, inputs, expected outputs), and stop with **MANUAL TEST REQUIRED**. Do not mark a task done until the user confirms pass/fail.

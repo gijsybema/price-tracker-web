@@ -1,0 +1,13 @@
+# Lessons Learned
+
+## Task: [task name]
+
+- ...
+- ...
+- ...
+
+---
+
+## Task: [next task]
+
+- ...

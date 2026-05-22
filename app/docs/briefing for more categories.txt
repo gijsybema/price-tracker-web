@@ -1,0 +1,9 @@
+Context: We have a Coolblue deal-tracking website. Until recently the scraper only tracked headphones, so the site copy was written around that single category. The scraper now tracks four audio categories: headphones, earbuds, speakers, and soundbars — all running on the same daily cron schedule, producing the same deal-detection logic.
+
+Task: Update the website copy to reflect that all four audio categories are tracked, not just headphones. Specifically:
+
+Find any text that names only "headphones" or implies a single category
+Update it to list all four categories (headphones, earbuds, speakers, soundbars) or use a collective term like "audio products" where a full list would be awkward
+Keep the tone and style consistent with the existing copy
+Do not change any layout, logic, or data queries — copy changes only
+Please start by showing me all the relevant text strings / copy that mention the category scope, so we can review them before changing anything.
