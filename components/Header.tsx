@@ -22,13 +22,13 @@ export default function Header() {
         </Link>
 
         {/* Navigatie */}
-        <nav className="flex items-center gap-6 text-sm text-gray-600">
+        <nav className="flex items-center gap-4 text-sm text-gray-600 sm:gap-6">
           <Link href="/" className="hover:text-gray-900">Home</Link>
           <Link href="/deals" className="hover:text-gray-900">Deals</Link>
-          <Link href="/how-it-works" className="hover:text-gray-900">
+          <Link href="/how-it-works" className="hidden hover:text-gray-900 sm:block">
             Hoe werkt het
           </Link>
-          <Link href="/about" className="hover:text-gray-900">Over</Link>
+          <Link href="/about" className="hidden hover:text-gray-900 sm:block">Over</Link>
         </nav>
       </div>
     </header>

@@ -48,14 +48,14 @@ export default function HowItWorksPage() {
               3. Filtering van deals
             </h2>
             <p className="mt-3 leading-8 text-gray-600">
-              Niet elke korting is interessant. Een product verschijnt pas wanneer 
+              Niet elke korting is interessant. Een product verschijnt pas wanneer
               het voldoet aan strikte voorwaarden zoals:
-              <ul className="list-disc pl-5 space-y-1">
-                <li>Significante prijsdaling</li>
-                <li>Hogere prijsklasse</li>
-                <li>Product is op voorraad</li>
-              </ul>
             </p>
+            <ul className="mt-2 list-disc pl-5 space-y-1 leading-8 text-gray-600">
+              <li>Significante prijsdaling</li>
+              <li>Hogere prijsklasse</li>
+              <li>Product is op voorraad</li>
+            </ul>
           </section>
   
           <section>
