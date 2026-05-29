@@ -69,5 +69,8 @@ If scope or risk grows beyond the chosen mode mid-task: stop, state the new mode
 ### Manual Testing Handoff
 If verification cannot be completed (no prod DB access, UI interaction required, external service needed, etc.): state what cannot be verified, list exact test scenarios (steps, inputs, expected outputs), and stop with **MANUAL TEST REQUIRED**. Do not mark a task done until the user confirms pass/fail.
 
+## SVG Charts
+- Use SVG for geometry only (paths, lines, rects). Never put text inside the SVG when using `preserveAspectRatio="none"` — fixed font sizes don't scale correctly with the container. Instead, position all labels as HTML elements using `%` coordinates derived from the SVG viewBox (`x / W * 100%`).
+
 ## Testing
 - Do not test DB query functions in isolation (e.g. dedicated test endpoints). Test them in context when the feature that uses them is built — visual output will catch query errors immediately.

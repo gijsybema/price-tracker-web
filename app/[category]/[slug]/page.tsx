@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getProductBySlug, getPriceHistory } from "../../../lib/products";
+import PriceHistoryChart from "../../../components/PriceHistoryChart";
 
 export const revalidate = 300;
 
@@ -60,30 +61,34 @@ export default async function ProductPage({ params }: Props) {
             {product.name}
           </h1>
 
-          {/* Price */}
-          <div className="mt-2 flex items-end gap-3">
-            {product.current_price !== null && (
-              <span className="text-4xl font-bold text-gray-900">
-                €{fmt(Number(product.current_price))}
-              </span>
-            )}
-            {hasDiscount && (
-              <div className="flex flex-col items-start">
-                <span className="text-xl text-gray-400 line-through">
-                  €{fmt(Number(product.high_30d))}
-                </span>
-                <span className="text-xs text-gray-400">30-daagse hoogste prijs</span>
+          {/* Price — hidden for inactive products (last known price is stale/misleading) */}
+          {product.active && (
+            <>
+              <div className="mt-2 flex items-end gap-3">
+                {product.current_price !== null && (
+                  <span className="text-4xl font-bold text-gray-900">
+                    €{fmt(Number(product.current_price))}
+                  </span>
+                )}
+                {hasDiscount && (
+                  <div className="flex flex-col items-start">
+                    <span className="text-xl text-gray-400 line-through">
+                      €{fmt(Number(product.high_30d))}
+                    </span>
+                    <span className="text-xs text-gray-400">30-daagse hoogste prijs</span>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          {hasDiscount && (
-            <div className="inline-flex w-fit items-center gap-2 rounded-full bg-green-100 px-5 py-2 font-semibold text-green-700">
-              <span className="text-xl">Bespaar €{fmt(Number(product.price_diff))}</span>
-              {product.drop_percentage !== null && (
-                <span className="text-base">({fmtPct(Number(product.drop_percentage))}% korting)</span>
+              {hasDiscount && (
+                <div className="inline-flex w-fit items-center gap-2 rounded-full bg-green-100 px-5 py-2 font-semibold text-green-700">
+                  <span className="text-xl">Bespaar €{fmt(Number(product.price_diff))}</span>
+                  {product.drop_percentage !== null && (
+                    <span className="text-base">({fmtPct(Number(product.drop_percentage))}% korting)</span>
+                  )}
+                </div>
               )}
-            </div>
+            </>
           )}
 
           {product.active ? (
@@ -149,28 +154,7 @@ export default async function ProductPage({ params }: Props) {
       {history.length > 0 && (
         <section className="mt-12">
           <h2 className="text-xl font-bold text-gray-900">Prijsgeschiedenis</h2>
-          <p className="mt-1 text-sm text-gray-500">Afgelopen 90 dagen</p>
-          {/* Placeholder — replaced by PriceHistoryChart in T08 */}
-          <div className="mt-4 overflow-hidden rounded-xl border border-gray-200">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-left text-gray-500">
-                <tr>
-                  <th className="px-4 py-2 font-medium">Datum</th>
-                  <th className="px-4 py-2 font-medium">Prijs</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {history.slice().reverse().map((point) => (
-                  <tr key={point.date}>
-                    <td className="px-4 py-2 text-gray-600">{point.date}</td>
-                    <td className="px-4 py-2 font-medium text-gray-900">
-                      €{fmt(Number(point.price))}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <PriceHistoryChart data={history} />
         </section>
       )}
     </main>

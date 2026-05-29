@@ -47,7 +47,7 @@ TechTracker.nl is a Dutch deal-finder for consumer audio products (headphones, e
 - Product name, brand, current price, old price, discount amount
 - In-stock indicator
 - Specs section — display JSONB specs blob, keyed by category (e.g. driver size, noise cancellation for headphones)
-- Price history chart — 60 or 90 day toggle, line chart of daily price
+- Price history chart — 30/60/90 day toggle, line chart of daily price; periods without sufficient data are disabled
 - No retailer description (copyright risk)
 - **Inactive product handling:** if product is inactive, show "Dit product is niet meer beschikbaar" notice + price history (still valuable) + "Bekijk vergelijkbare producten" link to the category page
 
@@ -202,7 +202,7 @@ Search accessible from header on all pages.
 | T05 | 2 — Product pages | `lib/products.ts` — `getProductBySlug(category, slug)` | ✅ |
 | T06 | 2 — Product pages | `lib/products.ts` — `getPriceHistory(productId, days)` | ✅ |
 | T07 | 2 — Product pages | `app/[category]/[slug]/page.tsx` — product detail page | ✅ |
-| T08 | 2 — Product pages | `components/PriceHistoryChart.tsx` — line chart with 60/90 toggle | ⬜ |
+| T08 | 2 — Product pages | `components/PriceHistoryChart.tsx` — line chart with 60/90 toggle | ✅ |
 | T09 | 2 — Product pages | `components/SpecsTable.tsx` — per-category specs renderer | ⬜ |
 | T10 | 2 — Product pages | Inactive product notice + category link | ✅ |
 | T11 | 3 — Category pages | `lib/products.ts` — `getProductsByCategory(category)` | ⬜ |
