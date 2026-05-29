@@ -5,6 +5,7 @@ export type Deal = {
   name: string;
   brand: string;
   category: string | null;
+  slug: string;
   product_url: string;
   image_url: string | null;
   current_price: number;

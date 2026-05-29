@@ -5,6 +5,7 @@
 - In NORMAL mode: plan is optional — if the task is clear, proceed directly to implementation; do not wait for approval between steps
 - Work in small, clearly defined steps — never implement more than one task or slice at a time
 - Keep changes minimal and focused; do not modify unrelated files
+- Read the exact task description before implementing — do not infer fields or requirements from nearby context in the spec
 - Ask for clarification if requirements are unclear
 - Be explicit about assumptions and decisions
 
@@ -23,6 +24,7 @@
 - When a task involves side effects, do not start immediately after confirmation — pause and explicitly verify assumptions before proceeding
 - Never modify `docs/spec.md` without explicit user confirmation; always show proposed changes and wait for approval
 - Do not mark tasks done in `docs/spec.md` during implementation; only mark them done at wrap-up or on explicit user confirmation
+- For tasks spanning multiple projects or files: read the source (e.g. SQL view, API response) before updating the consumer (e.g. TypeScript type) — never type against an assumed schema
 
 ## Output Style
 - Be concise and structured

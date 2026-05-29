@@ -197,8 +197,8 @@ Search accessible from header on all pages.
 |---|---|---|---|
 | T01 | 1 — Foundation | Fix localhost display bug — remove dark mode media query and dead font variables from `globals.css` | ✅ |
 | T02 | 1 — Foundation | Document `.env.local` setup in README | ✅ |
-| T03 | 1 — Foundation | Add `category`, `slug`, `is_active` to deal query functions | ⬜ |
-| T04 | 1 — Foundation | Verify DB views exclude inactive products | ⬜ |
+| T03 | 1 — Foundation | Add `category` and `slug` fields to existing deal queries | ✅ |
+| T04 | 1 — Foundation | Verify DB views exclude inactive products | ✅ |
 | T05 | 2 — Product pages | `lib/products.ts` — `getProductBySlug(category, slug)` | ⬜ |
 | T06 | 2 — Product pages | `lib/products.ts` — `getPriceHistory(productId, days)` | ⬜ |
 | T07 | 2 — Product pages | `app/[category]/[slug]/page.tsx` — product detail page | ⬜ |
