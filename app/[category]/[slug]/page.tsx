@@ -1,0 +1,178 @@
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { getProductBySlug, getPriceHistory } from "../../../lib/products";
+
+export const revalidate = 300;
+
+function fmt(price: number): string {
+  const str = price >= 100 ? price.toFixed(0) : price.toFixed(2);
+  return str.replace(".", ",");
+}
+
+function fmtPct(pct: number): string {
+  return pct.toFixed(1).replace(".", ",");
+}
+
+type Props = {
+  params: Promise<{ category: string; slug: string }>;
+};
+
+export default async function ProductPage({ params }: Props) {
+  const { category, slug } = await params;
+  const product = await getProductBySlug(category, slug);
+
+  if (!product) {
+    notFound();
+  }
+
+  const history = await getPriceHistory(product.id, 90);
+
+  const hasDiscount =
+    product.high_30d !== null &&
+    product.current_price !== null &&
+    product.price_diff !== null &&
+    product.price_diff > 0;
+
+  return (
+    <main className="mx-auto max-w-6xl px-6 py-10">
+      <div className="grid gap-8 md:grid-cols-2">
+        {/* Image */}
+        <div className="flex items-center justify-center rounded-2xl border border-gray-200 bg-white p-8">
+          {product.image_url ? (
+            <img
+              src={product.image_url}
+              alt={product.name}
+              className="max-h-72 w-auto object-contain"
+            />
+          ) : (
+            <div className="flex h-72 items-center justify-center text-gray-400">
+              Geen afbeelding
+            </div>
+          )}
+        </div>
+
+        {/* Product info */}
+        <div className="flex flex-col gap-4">
+          <p className="text-sm font-medium uppercase tracking-wide text-gray-500">
+            {product.brand}
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+            {product.name}
+          </h1>
+
+          {/* Price */}
+          <div className="mt-2 flex items-end gap-3">
+            {product.current_price !== null && (
+              <span className="text-4xl font-bold text-gray-900">
+                €{fmt(Number(product.current_price))}
+              </span>
+            )}
+            {hasDiscount && (
+              <div className="flex flex-col items-start">
+                <span className="text-xl text-gray-400 line-through">
+                  €{fmt(Number(product.high_30d))}
+                </span>
+                <span className="text-xs text-gray-400">30-daagse hoogste prijs</span>
+              </div>
+            )}
+          </div>
+
+          {hasDiscount && (
+            <div className="inline-flex w-fit items-center gap-2 rounded-full bg-green-100 px-5 py-2 font-semibold text-green-700">
+              <span className="text-xl">Bespaar €{fmt(Number(product.price_diff))}</span>
+              {product.drop_percentage !== null && (
+                <span className="text-base">({fmtPct(Number(product.drop_percentage))}% korting)</span>
+              )}
+            </div>
+          )}
+
+          {product.active ? (
+            <>
+              {/* In-stock indicator */}
+              {product.in_stock !== null && (
+                <p
+                  className={`text-sm font-medium ${
+                    product.in_stock ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  {product.in_stock ? "✓ Op voorraad" : "✕ Niet op voorraad"}
+                </p>
+              )}
+
+              {/* Affiliate CTA */}
+              <div className="mt-4">
+                <a
+                  href={product.product_url.startsWith("https://") ? product.product_url : "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
+                >
+                  Bekijk bij Coolblue
+                </a>
+              </div>
+            </>
+          ) : (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+              <p className="font-semibold text-amber-800">
+                Niet meer beschikbaar
+              </p>
+              <p className="mt-1 text-sm text-amber-700">
+                Dit product wordt niet meer verkocht bij Coolblue.
+              </p>
+              <Link
+                href={`/${category}`}
+                className="mt-3 inline-block text-sm font-medium text-amber-800 underline underline-offset-2 hover:text-amber-900"
+              >
+                Bekijk vergelijkbare producten →
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Specs */}
+      {product.specs && Object.keys(product.specs).length > 0 && (
+        <section className="mt-12">
+          <h2 className="text-xl font-bold text-gray-900">Specificaties</h2>
+          <dl className="mt-4 divide-y divide-gray-100 rounded-xl border border-gray-200">
+            {Object.entries(product.specs).map(([key, value]) => (
+              <div key={key} className="flex gap-4 px-4 py-3">
+                <dt className="w-48 shrink-0 text-sm text-gray-500">{key}</dt>
+                <dd className="text-sm text-gray-900">{String(value)}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      )}
+
+      {/* Price history */}
+      {history.length > 0 && (
+        <section className="mt-12">
+          <h2 className="text-xl font-bold text-gray-900">Prijsgeschiedenis</h2>
+          <p className="mt-1 text-sm text-gray-500">Afgelopen 90 dagen</p>
+          {/* Placeholder — replaced by PriceHistoryChart in T08 */}
+          <div className="mt-4 overflow-hidden rounded-xl border border-gray-200">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-left text-gray-500">
+                <tr>
+                  <th className="px-4 py-2 font-medium">Datum</th>
+                  <th className="px-4 py-2 font-medium">Prijs</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {history.slice().reverse().map((point) => (
+                  <tr key={point.date}>
+                    <td className="px-4 py-2 text-gray-600">{point.date}</td>
+                    <td className="px-4 py-2 font-medium text-gray-900">
+                      €{fmt(Number(point.price))}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+    </main>
+  );
+}

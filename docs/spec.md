@@ -201,10 +201,10 @@ Search accessible from header on all pages.
 | T04 | 1 — Foundation | Verify DB views exclude inactive products | ✅ |
 | T05 | 2 — Product pages | `lib/products.ts` — `getProductBySlug(category, slug)` | ✅ |
 | T06 | 2 — Product pages | `lib/products.ts` — `getPriceHistory(productId, days)` | ✅ |
-| T07 | 2 — Product pages | `app/[category]/[slug]/page.tsx` — product detail page | ⬜ |
+| T07 | 2 — Product pages | `app/[category]/[slug]/page.tsx` — product detail page | ✅ |
 | T08 | 2 — Product pages | `components/PriceHistoryChart.tsx` — line chart with 60/90 toggle | ⬜ |
 | T09 | 2 — Product pages | `components/SpecsTable.tsx` — per-category specs renderer | ⬜ |
-| T10 | 2 — Product pages | Inactive product notice + category link | ⬜ |
+| T10 | 2 — Product pages | Inactive product notice + category link | ✅ |
 | T11 | 3 — Category pages | `lib/products.ts` — `getProductsByCategory(category)` | ⬜ |
 | T12 | 3 — Category pages | `app/[category]/page.tsx` — category listing page | ⬜ |
 | T13 | 3 — Category pages | `components/BrandFilter.tsx` — client component | ⬜ |
@@ -222,6 +222,7 @@ Search accessible from header on all pages.
 | T25 | 7 — SEO | `generateMetadata()` on all new pages | ⬜ |
 | T26 | 7 — SEO | Verify/update `sitemap.xml` generation | ⬜ |
 | T27 | 7 — SEO | Google Search Console submission | ⬜ |
+| T28 | 1 — Foundation | `components/DealCard.tsx` — use Dutch comma separator for percentage display (`-29,9%`) | ⬜ |
 
 ---
 
@@ -250,3 +251,4 @@ Search accessible from header on all pages.
 - User accounts / saved products
 - Multi-retailer support (backend column exists; frontend deferred)
 - Social sharing buttons on product pages
+- Multi-retailer inactive handling: if a product becomes inactive at one retailer but is still available at another, the "niet meer beschikbaar" notice is misleading — revisit when multi-retailer support is added
