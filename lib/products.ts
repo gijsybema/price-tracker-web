@@ -1,5 +1,10 @@
 import { pool } from "./db";
 
+export type PricePoint = {
+  date: string;
+  price: number;
+};
+
 export type Product = {
   id: number;
   name: string;
@@ -63,5 +68,29 @@ export async function getProductBySlug(
   } catch (error) {
     console.error("Database error in getProductBySlug:", error);
     return null;
+  }
+}
+
+export async function getPriceHistory(
+  productId: number,
+  days: number
+): Promise<PricePoint[]> {
+  try {
+    const result = await pool.query<{ date: string; price: number }>(
+      `
+      SELECT DISTINCT ON (scraped_at::date)
+        scraped_at::date::text AS date,
+        price
+      FROM price_history
+      WHERE product_id = $1
+        AND scraped_at >= NOW() - ($2 * INTERVAL '1 day')
+      ORDER BY scraped_at::date ASC, scraped_at DESC
+      `,
+      [productId, days]
+    );
+    return result.rows;
+  } catch (error) {
+    console.error("Database error in getPriceHistory:", error);
+    return [];
   }
 }
