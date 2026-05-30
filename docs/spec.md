@@ -205,7 +205,7 @@ Search accessible from header on all pages.
 | T08 | 2 — Product pages | `components/PriceHistoryChart.tsx` — line chart with 60/90 toggle | ✅ |
 | T09 | 2 — Product pages | `components/SpecsTable.tsx` — per-category specs renderer | ✅ |
 | T10 | 2 — Product pages | Inactive product notice + category link | ✅ |
-| T11 | 3 — Category pages | `lib/products.ts` — `getProductsByCategory(category)` | ⬜ |
+| T11 | 3 — Category pages | `lib/products.ts` — `getProductsByCategory(category)` | ✅ |
 | T12 | 3 — Category pages | `app/[category]/page.tsx` — category listing page | ⬜ |
 | T13 | 3 — Category pages | `components/BrandFilter.tsx` — client component | ⬜ |
 | T14 | 3 — Category pages | `components/SortSelect.tsx` — client component | ⬜ |
