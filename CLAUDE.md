@@ -25,7 +25,8 @@
 - Never modify `docs/spec.md` without explicit user confirmation; always show proposed changes and wait for approval
 - Do not mark tasks done in `docs/spec.md` during implementation; only mark them done at wrap-up or on explicit user confirmation
 - For tasks spanning multiple projects or files: read the source (e.g. SQL view, API response) before updating the consumer (e.g. TypeScript type) — never type against an assumed schema
-- Before building any display on top of a DB field, verify what it actually represents — field names are often misleading (e.g. `old_price` may be the last drop event, not the 30-day high)
+- Before building any display on top of a DB field, verify what it actually represents — field names are often misleading (e.g. `old_price` may be the last drop event, not the 30-day high). For JSONB fields, also verify stored value types with `SELECT DISTINCT` before writing type-conversion logic.
+- For visual design tasks: present 3–4 named options upfront and let the user choose before implementing — do not iterate one change at a time
 - At plan time, surface design questions explicitly as open questions (e.g. "which reference price do we show?", "how does this behave in a multi-retailer future?") — these decisions are cheaper to make before implementation than during testing
 
 ## Output Style

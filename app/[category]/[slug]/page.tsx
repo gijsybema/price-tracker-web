@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getProductBySlug, getPriceHistory } from "../../../lib/products";
 import PriceHistoryChart from "../../../components/PriceHistoryChart";
+import SpecsTable from "../../../components/SpecsTable";
 
 export const revalidate = 300;
 
@@ -135,21 +136,6 @@ export default async function ProductPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Specs */}
-      {product.specs && Object.keys(product.specs).length > 0 && (
-        <section className="mt-12">
-          <h2 className="text-xl font-bold text-gray-900">Specificaties</h2>
-          <dl className="mt-4 divide-y divide-gray-100 rounded-xl border border-gray-200">
-            {Object.entries(product.specs).map(([key, value]) => (
-              <div key={key} className="flex gap-4 px-4 py-3">
-                <dt className="w-48 shrink-0 text-sm text-gray-500">{key}</dt>
-                <dd className="text-sm text-gray-900">{String(value)}</dd>
-              </div>
-            ))}
-          </dl>
-        </section>
-      )}
-
       {/* Price history */}
       {history.length > 0 && (
         <section className="mt-12">
@@ -157,6 +143,9 @@ export default async function ProductPage({ params }: Props) {
           <PriceHistoryChart data={history} />
         </section>
       )}
+
+      {/* Specs */}
+      <SpecsTable category={category} specs={product.specs} />
     </main>
   );
 }
