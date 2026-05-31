@@ -65,7 +65,7 @@ export default async function ProductPage({ params }: Props) {
             {product.brand}
           </p>
           {product.active && isDeal && (
-            <span className="inline-flex w-fit items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+            <span className="inline-flex self-start items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
               🏷️ Deal
             </span>
           )}

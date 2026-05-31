@@ -5,6 +5,13 @@ export type PricePoint = {
   price: number;
 };
 
+export type CategorySummary = {
+  category: string;
+  product_count: number;
+  deal_count: number;
+  image_url: string | null;
+};
+
 export type Product = {
   id: number;
   name: string;
@@ -144,6 +151,64 @@ export async function getPriceHistory(
     return result.rows;
   } catch (error) {
     console.error("Database error in getPriceHistory:", error);
+    return [];
+  }
+}
+
+export async function getCategorySummaries(): Promise<CategorySummary[]> {
+  try {
+    const result = await pool.query<CategorySummary>(`
+      WITH product_prices AS (
+        SELECT
+          p.category,
+          p.image_url,
+          ph.price        AS current_price,
+          ph.availability AS in_stock,
+          CASE WHEN p30.high_30d > ph.price AND ph.price IS NOT NULL
+               THEN p30.high_30d - ph.price
+               ELSE NULL END AS price_diff
+        FROM products p
+        LEFT JOIN LATERAL (
+          SELECT price, availability
+          FROM price_history
+          WHERE product_id = p.id
+          ORDER BY scraped_at DESC
+          LIMIT 1
+        ) ph ON true
+        LEFT JOIN LATERAL (
+          SELECT MAX(price) AS high_30d
+          FROM price_history
+          WHERE product_id = p.id
+            AND scraped_at >= NOW() - INTERVAL '30 days'
+        ) p30 ON true
+        WHERE p.active = true
+          AND p.category IN ('headphones', 'earbuds', 'speakers', 'soundbars')
+      ),
+      category_images AS (
+        SELECT DISTINCT ON (category)
+          category,
+          image_url
+        FROM product_prices
+        WHERE in_stock = true
+          AND current_price IS NOT NULL
+        ORDER BY category, current_price DESC
+      )
+      SELECT
+        pp.category,
+        COUNT(*)::int                                        AS product_count,
+        COUNT(*) FILTER (
+          WHERE pp.in_stock = true
+            AND pp.price_diff >= 25
+            AND pp.current_price > 100
+        )::int                                               AS deal_count,
+        ci.image_url
+      FROM product_prices pp
+      LEFT JOIN category_images ci ON ci.category = pp.category
+      GROUP BY pp.category, ci.image_url
+    `);
+    return result.rows;
+  } catch (error) {
+    console.error("Database error in getCategorySummaries:", error);
     return [];
   }
 }

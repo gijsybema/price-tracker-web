@@ -59,3 +59,11 @@
 - **Mobile header space is a hard constraint — state it as an open question in planning.** Search input + nav links fill the header fast on small screens. For any header task, the planning question should be "what shows on mobile vs desktop?" rather than discovering it at verify.
 
 ---
+
+## Task: T17 — Products overview page
+
+- **Pill badges must use `whitespace-nowrap` — always.** A badge that wraps its text loses its shape and stretches to fill the container. Add `whitespace-nowrap` by default to every pill/badge span.
+- **`self-start` alone doesn't reliably constrain flex children — pair with `items-start` on the parent.** `inline-flex` + `self-start` can behave inconsistently. The reliable pattern: `items-start` on the `flex-col` parent constrains all children to their natural width.
+- **Image selection for representative thumbnails is a data/design decision — surface it in planning.** "Which product image represents the category?" has real UX implications (most expensive → stable flagship; biggest deal → changes constantly). Raising it before implementation saved a post-implement discussion.
+
+---

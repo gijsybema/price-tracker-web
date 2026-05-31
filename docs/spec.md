@@ -212,7 +212,7 @@ Search input visible in header on desktop; hidden on mobile (accessible via futu
 | T14 | 3 — Category pages | `components/SortSelect.tsx` — client component | ✅ |
 | T15 | 3 — Category pages | Deal badge component | ✅ |
 | T16 | 4 — Nav & overview | Update `components/Header.tsx` — new nav + search input | ✅ |
-| T17 | 4 — Nav & overview | `app/products/page.tsx` — category overview page | ⬜ |
+| T17 | 4 — Nav & overview | `app/products/page.tsx` — category overview page | ✅ |
 | T18 | 5 — Search | DB: add `tsvector` index (coordinate with backend) | ⬜ |
 | T19 | 5 — Search | `app/api/search/route.ts` — search route handler | ⬜ |
 | T20 | 5 — Search | `lib/search.ts` — `searchProducts(query)` | ⬜ |
