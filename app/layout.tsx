@@ -3,6 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import ScrollToTop from "../components/ScrollToTop";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
@@ -17,6 +18,7 @@ export default function RootLayout({
     <html lang="nl">
       <body className="min-h-screen bg-white text-gray-900">
         <div className="flex bg-white min-h-screen flex-col">
+          <ScrollToTop />
           <Header />
           <div className="flex-1">{children}</div>
           <Footer />

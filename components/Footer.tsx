@@ -48,6 +48,12 @@ export default function Footer() {
         </div>
 
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-gray-500 md:justify-end">
+            <Link href="/how-it-works" className="transition hover:text-gray-900">
+              Hoe werkt het
+            </Link>
+            <Link href="/about" className="transition hover:text-gray-900">
+              Over ons
+            </Link>
             <Link href="/privacy" className="transition hover:text-gray-900">
               Privacybeleid
             </Link>

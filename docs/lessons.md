@@ -52,3 +52,10 @@
 - **Consistency between surfaces matters more than local optimality.** Using the same `price_diff ≥ €25 AND current_price > €100` threshold as the deals page means "Deal" means the same thing everywhere on the site. A lower threshold on the category page would have been technically defensible but confusing to users comparing the two pages.
 
 ---
+
+## Task: T16 — Header nav update
+
+- **Audit every existing link before replacing nav.** "Hoe werkt het" was silently dropped because it wasn't in the spec nav table. The right habit: before rewriting a nav component, explicitly list every current destination and ask "where does each one go?" — not just "what does the spec say to add?" The spec is additive; it doesn't always document what to preserve.
+- **Mobile header space is a hard constraint — state it as an open question in planning.** Search input + nav links fill the header fast on small screens. For any header task, the planning question should be "what shows on mobile vs desktop?" rather than discovering it at verify.
+
+---
