@@ -35,6 +35,12 @@ export default async function ProductPage({ params }: Props) {
     product.price_diff !== null &&
     product.price_diff > 0;
 
+  const isDeal =
+    product.price_diff !== null &&
+    Number(product.price_diff) >= 25 &&
+    product.current_price !== null &&
+    Number(product.current_price) > 100;
+
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
       <div className="grid gap-8 md:grid-cols-2">
@@ -58,6 +64,11 @@ export default async function ProductPage({ params }: Props) {
           <p className="text-sm font-medium uppercase tracking-wide text-gray-500">
             {product.brand}
           </p>
+          {product.active && isDeal && (
+            <span className="inline-flex w-fit items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+              🏷️ Deal
+            </span>
+          )}
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">
             {product.name}
           </h1>
