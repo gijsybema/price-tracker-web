@@ -45,3 +45,10 @@
 - **Design consistency questions belong in planning, not verify.** The inactive product consistency question (detail page exists but product isn't listed) could have become a rework if raised after T12 was done. Asking "are there related pages or surfaces this interacts with?" before implementing is the right habit.
 
 ---
+
+## Task: T15 — Deal badge component
+
+- **The threshold question is a design decision, not a code decision — surface it in planning.** "On deal" needed a concrete definition before any code could be written. Deferring it to planning (rather than guessing at `price_diff > 0`) avoided a post-implement rework. Any badge, label, or highlight that signals a business concept needs its threshold defined upfront.
+- **Consistency between surfaces matters more than local optimality.** Using the same `price_diff ≥ €25 AND current_price > €100` threshold as the deals page means "Deal" means the same thing everywhere on the site. A lower threshold on the category page would have been technically defensible but confusing to users comparing the two pages.
+
+---

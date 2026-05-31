@@ -27,7 +27,7 @@ TechTracker.nl is a Dutch deal-finder for consumer audio products (headphones, e
 ### 2.2 Deals page (`/deals`)
 - Filter tabs: Alle | Headphones | Earbuds | Speakers | Soundbars
 - Default tab: Alle
-- Top 20 deals per tab, sorted by biggest absolute discount (€)
+- Top 20 deals per tab, sorted by biggest absolute discount (€) — remove the 20-product cap once category filter tabs are added (T22)
 - Deal card contains: product image, product name, old price, new price, discount amount, single CTA → Coolblue affiliate link
 - No secondary "Bekijk product" link on deal card (avoids distracting from affiliate click)
 - Only active, in-stock products shown
@@ -45,6 +45,7 @@ TechTracker.nl is a Dutch deal-finder for consumer audio products (headphones, e
 - URL pattern: `/{category}/{slug}` (e.g. `/headphones/sony-wh-1000xm5`)
 - Prominent "Bekijk bij Coolblue" affiliate CTA button
 - Product name, brand, current price, old price, discount amount
+- Deal badge (🏷️ Deal) when `price_diff ≥ €25` AND `current_price > €100` — same threshold as category page badge
 - In-stock indicator
 - Specs section — display JSONB specs blob, keyed by category (e.g. driver size, noise cancellation for headphones)
 - Price history chart — 30/60/90 day toggle, line chart of daily price; periods without sufficient data are disabled
@@ -209,7 +210,7 @@ Search accessible from header on all pages.
 | T12 | 3 — Category pages | `app/[category]/page.tsx` — category listing page | ✅ |
 | T13 | 3 — Category pages | `components/BrandFilter.tsx` — client component | ✅ |
 | T14 | 3 — Category pages | `components/SortSelect.tsx` — client component | ✅ |
-| T15 | 3 — Category pages | Deal badge component | ⬜ |
+| T15 | 3 — Category pages | Deal badge component | ✅ |
 | T16 | 4 — Nav & overview | Update `components/Header.tsx` — new nav + search input | ⬜ |
 | T17 | 4 — Nav & overview | `app/products/page.tsx` — category overview page | ⬜ |
 | T18 | 5 — Search | DB: add `tsvector` index (coordinate with backend) | ⬜ |

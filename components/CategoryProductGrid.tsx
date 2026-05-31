@@ -19,12 +19,18 @@ function ProductCard({ product, category }: { product: Product; category: string
 
   const inStock = product.in_stock === true;
 
+  const isDeal =
+    product.price_diff !== null &&
+    Number(product.price_diff) >= 25 &&
+    product.current_price !== null &&
+    Number(product.current_price) > 100;
+
+  const borderClass = isDeal ? "border-amber-300" : inStock ? "border-gray-200" : "border-gray-100";
+
   return (
     <Link
       href={`/${category}/${product.slug}`}
-      className={`group flex flex-col rounded-2xl border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${
-        inStock ? "border-gray-200" : "border-gray-100 opacity-60"
-      }`}
+      className={`group flex flex-col rounded-2xl border bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${borderClass} ${!inStock ? "opacity-60" : ""}`}
     >
       <div className="flex h-40 items-center justify-center">
         {product.image_url ? (
@@ -45,6 +51,11 @@ function ProductCard({ product, category }: { product: Product; category: string
         <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
           {product.brand}
         </p>
+        {isDeal && (
+          <span className="inline-flex w-fit items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+            🏷️ Deal
+          </span>
+        )}
         <h2 className="text-sm font-semibold leading-snug text-gray-900 transition group-hover:text-black">
           {product.name}
         </h2>
