@@ -2,7 +2,7 @@
 
 ## Part 1 — Lessons
 Summarize practical lessons from this task that will help me improve as:
-- a developer
+- a product owner
 - a user of AI coding tools (Claude)
 - a data engineer / analyst (if relevant)
 
