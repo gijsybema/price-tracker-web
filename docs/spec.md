@@ -207,7 +207,7 @@ Search accessible from header on all pages.
 | T10 | 2 — Product pages | Inactive product notice + category link | ✅ |
 | T11 | 3 — Category pages | `lib/products.ts` — `getProductsByCategory(category)` | ✅ |
 | T12 | 3 — Category pages | `app/[category]/page.tsx` — category listing page | ✅ |
-| T13 | 3 — Category pages | `components/BrandFilter.tsx` — client component | ⬜ |
+| T13 | 3 — Category pages | `components/BrandFilter.tsx` — client component | ✅ |
 | T14 | 3 — Category pages | `components/SortSelect.tsx` — client component | ⬜ |
 | T15 | 3 — Category pages | Deal badge component | ⬜ |
 | T16 | 4 — Nav & overview | Update `components/Header.tsx` — new nav + search input | ⬜ |
@@ -223,6 +223,8 @@ Search accessible from header on all pages.
 | T26 | 7 — SEO | Verify/update `sitemap.xml` generation | ⬜ |
 | T27 | 7 — SEO | Google Search Console submission | ⬜ |
 | T28 | 1 — Foundation | `components/DealCard.tsx` — use Dutch comma separator for percentage display (`-29,9%`) | ⬜ |
+| T29 | 3 — Category pages | Mobile filter UX on category pages — sticky/floating brand filter access or back-to-top button so users can re-filter after scrolling down | ⬜ |
+| T30 | 3 — Category pages | Price filter on category pages — client-side, options TBD (range slider / min-max inputs / preset buckets); plan and present options before implementing | ⬜ |
 
 ---
 
