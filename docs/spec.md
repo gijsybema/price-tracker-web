@@ -208,7 +208,7 @@ Search accessible from header on all pages.
 | T11 | 3 — Category pages | `lib/products.ts` — `getProductsByCategory(category)` | ✅ |
 | T12 | 3 — Category pages | `app/[category]/page.tsx` — category listing page | ✅ |
 | T13 | 3 — Category pages | `components/BrandFilter.tsx` — client component | ✅ |
-| T14 | 3 — Category pages | `components/SortSelect.tsx` — client component | ⬜ |
+| T14 | 3 — Category pages | `components/SortSelect.tsx` — client component | ✅ |
 | T15 | 3 — Category pages | Deal badge component | ⬜ |
 | T16 | 4 — Nav & overview | Update `components/Header.tsx` — new nav + search input | ⬜ |
 | T17 | 4 — Nav & overview | `app/products/page.tsx` — category overview page | ⬜ |

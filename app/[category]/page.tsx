@@ -37,12 +37,6 @@ export default async function CategoryPage({ params }: Props) {
 
   const products = await getProductsByCategory(category);
 
-  // In-stock first, then out-of-stock; within each group sort by name (already from DB)
-  const sorted = [
-    ...products.filter((p) => p.in_stock === true),
-    ...products.filter((p) => p.in_stock !== true),
-  ];
-
   const label = CATEGORY_LABELS[category as Category];
 
   return (
@@ -54,7 +48,7 @@ export default async function CategoryPage({ params }: Props) {
         </p>
       </div>
 
-      <CategoryProductGrid products={sorted} category={category} />
+      <CategoryProductGrid products={products} category={category} />
     </main>
   );
 }

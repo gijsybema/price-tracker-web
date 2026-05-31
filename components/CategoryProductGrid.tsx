@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import BrandFilter from "./BrandFilter";
+import SortSelect, { type SortKey } from "./SortSelect";
 import type { Product } from "../lib/products";
 
 function fmt(price: number): string {
@@ -84,6 +85,30 @@ function ProductCard({ product, category }: { product: Product; category: string
   );
 }
 
+function sortProducts(products: Product[], key: SortKey): Product[] {
+  const inStock = products.filter((p) => p.in_stock === true);
+  const notInStock = products.filter((p) => p.in_stock !== true);
+
+  function comparator(a: Product, b: Product): number {
+    if (key === "discount") {
+      const da = a.price_diff !== null ? Number(a.price_diff) : -Infinity;
+      const db = b.price_diff !== null ? Number(b.price_diff) : -Infinity;
+      return db - da;
+    }
+    if (key === "price_asc") {
+      const pa = a.current_price !== null ? Number(a.current_price) : Infinity;
+      const pb = b.current_price !== null ? Number(b.current_price) : Infinity;
+      return pa - pb;
+    }
+    // price_desc
+    const pa = a.current_price !== null ? Number(a.current_price) : -Infinity;
+    const pb = b.current_price !== null ? Number(b.current_price) : -Infinity;
+    return pb - pa;
+  }
+
+  return [...inStock.sort(comparator), ...notInStock.sort(comparator)];
+}
+
 type Props = {
   products: Product[];
   category: string;
@@ -91,6 +116,7 @@ type Props = {
 
 export default function CategoryProductGrid({ products, category }: Props) {
   const [selectedBrands, setSelectedBrands] = useState<Set<string>>(new Set());
+  const [sortKey, setSortKey] = useState<SortKey>("discount");
 
   const brands = [...new Set(products.map((p) => p.brand))].sort();
 
@@ -106,10 +132,12 @@ export default function CategoryProductGrid({ products, category }: Props) {
     });
   }
 
-  const filtered =
+  const brandFiltered =
     selectedBrands.size === 0
       ? products
       : products.filter((p) => selectedBrands.has(p.brand));
+
+  const sorted = sortProducts(brandFiltered, sortKey);
 
   return (
     <div>
@@ -120,20 +148,24 @@ export default function CategoryProductGrid({ products, category }: Props) {
           onToggle={toggleBrand}
           onClearAll={() => setSelectedBrands(new Set())}
         />
-        {selectedBrands.size > 0 && (
-          <p className="mt-3 text-sm text-gray-500">
-            {filtered.length} {filtered.length === 1 ? "product" : "producten"} gevonden
-          </p>
-        )}
       </div>
 
-      {filtered.length === 0 ? (
+      <div className="mt-4 flex items-center justify-between">
+        <p className="text-sm text-gray-500">
+          {selectedBrands.size > 0
+            ? `${sorted.length} ${sorted.length === 1 ? "product" : "producten"} gevonden`
+            : ""}
+        </p>
+        <SortSelect value={sortKey} onChange={setSortKey} />
+      </div>
+
+      {sorted.length === 0 ? (
         <div className="mt-16 text-center">
           <p className="text-lg text-gray-600">Geen producten gevonden.</p>
         </div>
       ) : (
         <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filtered.map((product) => (
+          {sorted.map((product) => (
             <ProductCard key={product.id} product={product} category={category} />
           ))}
         </div>
