@@ -26,12 +26,22 @@
 
 ---
 
-## Task: T09 — SpecsTable component
+## Task: T09 — SpecsTable component — SpecsTable component
 
 - **Share the authoritative source schema upfront.** Providing the scraper's `_SPEC_KEYS` dict at the start would have skipped the planning question entirely. When asking Claude to build a mapping component over DB data, hand over the actual key names immediately — don't wait to be asked.
 
 - **Front-load option selection on visual tasks.** Converging through ~8 one-by-one tweaks was slow. Asking for named options and picking one worked well but came too late. Start any visual design exchange by requesting 3–4 options, then iterate from the chosen one.
 
 - **Query JSONB value types before assuming them.** A quick `SELECT DISTINCT specs->>'key'` would have immediately confirmed values are strings ("Ja"/"Nee"), avoiding dead boolean-conversion code that had to be cleaned up in verify.
+
+---
+
+## Task: T12 — Category listing page
+
+- **Cross-reference existing pages when rendering the same field on a new page.** The `in_stock === null` case was already handled correctly in the product detail page. Reading that code first would have caught the gap before implement rather than at verify — a 30-second check avoided a bug.
+
+- **Surfacing display-name open questions pays off.** Asking about Dutch category labels upfront (earbuds → oordopjes) prevented a post-implement fix. For any task that introduces user-facing labels derived from DB slugs, always make the Dutch label mapping an explicit open question in the plan.
+
+- **Design consistency questions belong in planning, not verify.** The inactive product consistency question (detail page exists but product isn't listed) could have become a rework if raised after T12 was done. Asking "are there related pages or surfaces this interacts with?" before implementing is the right habit.
 
 ---

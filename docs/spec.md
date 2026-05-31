@@ -79,7 +79,7 @@ Search accessible from header on all pages.
 
 - **Performance:** ISR with 5-minute revalidation on all data-heavy pages (homepage, deals, category pages). Product pages revalidate on the same cycle.
 - **SEO:** All pages listed in section 2 are indexable. Auto-generated `<title>` and `<meta description>` via Next.js `generateMetadata()` for product, category, and deals pages.
-- **Inactive products:** never appear in any listing. Product detail pages for inactive products render gracefully (no 404).
+- **Inactive products:** never appear in any listing. Product detail pages for inactive products render gracefully (no 404). This is intentional — inactive pages exist to handle old bookmarks and inbound links (e.g. from Google) without serving a 404, not for active discovery. The detail page shows a "Niet meer beschikbaar" notice and links back to the category page. The inconsistency (page exists but isn't listed) is acceptable given this rationale.
 - **Localhost parity:** all pages must render correctly in local development with real data. Tailwind content paths must be verified to fix known dev/prod display discrepancy.
 - **Affiliate links:** all Coolblue links open in a new tab with appropriate `rel="noopener noreferrer"`.
 - **GDPR:** no user data collected beyond Google Analytics. Price alert functionality (future) will require explicit consent flow.
@@ -206,7 +206,7 @@ Search accessible from header on all pages.
 | T09 | 2 — Product pages | `components/SpecsTable.tsx` — per-category specs renderer | ✅ |
 | T10 | 2 — Product pages | Inactive product notice + category link | ✅ |
 | T11 | 3 — Category pages | `lib/products.ts` — `getProductsByCategory(category)` | ✅ |
-| T12 | 3 — Category pages | `app/[category]/page.tsx` — category listing page | ⬜ |
+| T12 | 3 — Category pages | `app/[category]/page.tsx` — category listing page | ✅ |
 | T13 | 3 — Category pages | `components/BrandFilter.tsx` — client component | ⬜ |
 | T14 | 3 — Category pages | `components/SortSelect.tsx` — client component | ⬜ |
 | T15 | 3 — Category pages | Deal badge component | ⬜ |
