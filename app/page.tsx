@@ -1,6 +1,8 @@
 import Link from "next/link";
 import DealCard from "../components/DealCard";
+import CategoryCard from "../components/CategoryCard";
 import { getHomepageDeals } from "../lib/deals";
+import { getCategorySummaries } from "../lib/products";
 
 export const revalidate = 300;
 
@@ -11,7 +13,12 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const { deals, error } = await getHomepageDeals();
+  const [{ deals, error }, summaries] = await Promise.all([
+    getHomepageDeals(),
+    getCategorySummaries(),
+  ]);
+
+  const summaryMap = Object.fromEntries(summaries.map((s) => [s.category, s]));
 
   return (
     <main>
@@ -98,6 +105,36 @@ export default async function Home() {
             </div>
           </div>
         )}
+      </section>
+
+      <section className="bg-slate-50">
+        <div className="mx-auto max-w-6xl px-6 py-16">
+          <div className="max-w-2xl">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+              Zoek per categorie
+            </h2>
+            <p className="mt-3 text-gray-600">
+              Bekijk alle producten per categorie en ontdek welke modellen TechTracker volgt.
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-6 sm:grid-cols-2">
+            {(["headphones", "earbuds", "speakers", "soundbars"] as const).map((slug) => {
+              const label = { headphones: "Koptelefoons", earbuds: "Oordopjes", speakers: "Speakers", soundbars: "Soundbars" }[slug];
+              const summary = summaryMap[slug];
+              return (
+                <CategoryCard
+                  key={slug}
+                  category={slug}
+                  label={label}
+                  product_count={summary?.product_count ?? 0}
+                  deal_count={summary?.deal_count ?? 0}
+                  image_url={summary?.image_url ?? null}
+                />
+              );
+            })}
+          </div>
+        </div>
       </section>
 
       <section className="bg-slate-700 text-white">
