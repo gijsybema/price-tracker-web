@@ -230,6 +230,7 @@ Search input visible in header on desktop; hidden on mobile (accessible via futu
 | T30 | 3 — Category pages | Price filter on category pages — client-side, options TBD (range slider / min-max inputs / preset buckets); plan and present options before implementing | ⬜ |
 | T31 | 8 — Dev tooling | `product_scraper/scripts/refresh_local_db.sh` — dump subset of prod into local DB to keep local in sync | ⬜ |
 | T32 | 6 — Deals update | DealCard redesign — new look and feel; add secondary "Bekijk product" link to `/{category}/{slug}` | ⬜ |
+| T33 | 7 — SEO | Improve website copy for SEO — review and rewrite page headings, body text, and static metadata descriptions across all pages for keyword relevance and Dutch search intent | ⬜ |
 
 ---
 

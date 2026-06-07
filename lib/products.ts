@@ -155,6 +155,18 @@ export async function getPriceHistory(
   }
 }
 
+export async function getAllActiveProductSlugs(): Promise<{ category: string; slug: string }[]> {
+  try {
+    const result = await pool.query<{ category: string; slug: string }>(
+      `SELECT category, slug FROM products WHERE active = true ORDER BY category, slug`
+    );
+    return result.rows;
+  } catch (error) {
+    console.error("Database error in getAllActiveProductSlugs:", error);
+    return [];
+  }
+}
+
 export async function getCategorySummaries(): Promise<CategorySummary[]> {
   try {
     const result = await pool.query<CategorySummary>(`
