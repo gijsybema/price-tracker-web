@@ -90,6 +90,14 @@
 
 ---
 
+## Task: T26/T27 — Sitemap update + Google Search Console submission
+
+- **Deploy before submitting to Google Search Console.** Submitting a sitemap before the changes are live serves Google an outdated file. The right order is always: commit → deploy → submit.
+- **"Page with redirect" in Search Console is not a bug.** The bare domain redirecting to www (or vice versa) will always show as a redirect and will never be "indexed" — the destination URL is what gets indexed. No action needed.
+- **Request manual indexing for important new URLs via the URL Inspection tool.** Submitting the sitemap tells Google the URLs exist; requesting indexing directly queues them for crawling within days rather than waiting for the regular crawl cycle.
+
+---
+
 ## Task: T25 — generateMetadata on all new pages
 
 - **Audit for pre-existing metadata before treating a task as net-new.** Most pages already had `metadata` exports — the real work was one missing page. A 30-second grep at the start would have scoped the task immediately instead of discovering it mid-plan.

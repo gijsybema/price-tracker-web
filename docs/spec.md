@@ -223,8 +223,8 @@ Search input visible in header on desktop; hidden on mobile (accessible via futu
 | T23 | 6 — Deals update | Update `lib/deals.ts` to support category filter param | ✅ |
 | T24 | 6 — Deals update | Add "Browse by category" section to `app/page.tsx` homepage | ✅ |
 | T25 | 7 — SEO | `generateMetadata()` on all new pages | ✅ |
-| T26 | 7 — SEO | Verify/update `sitemap.xml` generation | ⬜ |
-| T27 | 7 — SEO | Google Search Console submission | ⬜ |
+| T26 | 7 — SEO | Verify/update `sitemap.xml` generation | ✅ |
+| T27 | 7 — SEO | Google Search Console submission | ✅ |
 | T28 | 1 — Foundation | `components/DealCard.tsx` — use Dutch comma separator for percentage display (`-29,9%`) | ⬜ |
 | T29 | 3 — Category pages | Mobile filter UX on category pages — sticky/floating brand filter access or back-to-top button so users can re-filter after scrolling down | ⬜ |
 | T30 | 3 — Category pages | Price filter on category pages — client-side, options TBD (range slider / min-max inputs / preset buckets); plan and present options before implementing | ⬜ |
