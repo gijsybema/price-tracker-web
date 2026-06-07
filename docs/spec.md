@@ -27,7 +27,8 @@ TechTracker.nl is a Dutch deal-finder for consumer audio products (headphones, e
 ### 2.2 Deals page (`/deals`)
 - Filter tabs: Alle | Headphones | Earbuds | Speakers | Soundbars
 - Default tab: Alle
-- Top 20 deals per tab, sorted by biggest absolute discount (€) — remove the 20-product cap once category filter tabs are added (T22)
+- Top 50 deals on Alle tab (cap lifted when brand filter is active); all deals shown on category tabs. Sorted by biggest absolute discount (€).
+- Brand filter: narrows results within the active tab; resets on tab change.
 - Deal card contains: product image, product name, old price, new price, discount amount, single CTA → Coolblue affiliate link
 - No secondary "Bekijk product" link on deal card (avoids distracting from affiliate click)
 - Only active, in-stock products shown
@@ -218,8 +219,8 @@ Search input visible in header on desktop; hidden on mobile (accessible via futu
 | T19 | 5 — Search | `app/api/search/route.ts` — search route handler | ✅ |
 | T20 | 5 — Search | `lib/search.ts` — `searchProducts(query)` | ✅ |
 | T21 | 5 — Search | Search results UI (dropdown or `/search?q=` page) — note: API does not return `in_stock`; add to `searchProducts` if out-of-stock indicator is needed | ✅ |
-| T22 | 6 — Deals update | Add category tabs to `app/deals/page.tsx` | ⬜ |
-| T23 | 6 — Deals update | Update `lib/deals.ts` to support category filter param | ⬜ |
+| T22 | 6 — Deals update | Add category tabs to `app/deals/page.tsx` | ✅ |
+| T23 | 6 — Deals update | Update `lib/deals.ts` to support category filter param | ✅ |
 | T24 | 6 — Deals update | Add "Browse by category" section to `app/page.tsx` homepage | ⬜ |
 | T25 | 7 — SEO | `generateMetadata()` on all new pages | ⬜ |
 | T26 | 7 — SEO | Verify/update `sitemap.xml` generation | ⬜ |

@@ -60,6 +60,14 @@
 
 ---
 
+## Task: T22/T23 — Deals page category tabs + brand filter
+
+- **Brand filter was caught at plan time, not during implement — this is the right moment.** Reviewing the plan before approving it is when scope additions are cheapest. A brand filter discovered mid-implement would have required stopping, re-planning, and restarting.
+- **Client-side filtering over a bounded dataset preserves ISR.** Fetching all deals server-side and filtering in the browser avoids making the page dynamic, which would bypass `revalidate`. Reusable pattern for any page with interactive filters over a dataset that fits comfortably in memory.
+- **Check the view definition before assuming you can add a WHERE clause to it.** `dealpage_topdeals` had `LIMIT 20` embedded — querying it with `WHERE category = $1` would not have removed the cap. Reading the view source first clarified that `deal_candidates` was the right base to query directly.
+
+---
+
 ## Task: T21 — Search dropdown UI
 
 - **Sort stability on ranked lists is a product decision — surface it at plan time.** `ts_rank` ties are non-deterministic. Defining tiebreakers (in-stock first, then deal size) required an extra exchange after implement. "What happens when two results score equally?" is a plan-time question for any ranked list.

@@ -15,6 +15,20 @@ export type Deal = {
   price_level_since: string;
 };
 
+export async function getAllDeals(): Promise<{ deals: Deal[]; error: boolean }> {
+  try {
+    const result = await pool.query(`
+      SELECT *
+      FROM deal_candidates
+      ORDER BY price_diff DESC, price_drop_pct DESC
+    `);
+    return { deals: result.rows, error: false };
+  } catch (error) {
+    console.error("Database error in getAllDeals:", error);
+    return { deals: [], error: true };
+  }
+}
+
 export async function getDealCandidates(): Promise<Deal[]> {
   try {
     const result = await pool.query(`
