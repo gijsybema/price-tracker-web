@@ -90,6 +90,14 @@
 
 ---
 
+## Task: T25 — generateMetadata on all new pages
+
+- **Audit for pre-existing metadata before treating a task as net-new.** Most pages already had `metadata` exports — the real work was one missing page. A 30-second grep at the start would have scoped the task immediately instead of discovering it mid-plan.
+- **`pg` `numeric` columns return as strings at runtime — coerce with `Number()` before `.toFixed()`.** TypeScript types say `number` but the runtime value is a string. Silent crash at render time. Any new call to `fmt()` or arithmetic on a DB value needs `Number()` wrapping.
+- **Copy iteration is faster with named options and a concrete rendered example.** Showing three labelled options with real output resolved the description question in one exchange — versus one-change-at-a-time iteration which takes many rounds.
+
+---
+
 ## Task: T17 — Products overview page
 
 - **Pill badges must use `whitespace-nowrap` — always.** A badge that wraps its text loses its shape and stretches to fill the container. Add `whitespace-nowrap` by default to every pill/badge span.

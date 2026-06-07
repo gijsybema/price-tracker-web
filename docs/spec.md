@@ -222,7 +222,7 @@ Search input visible in header on desktop; hidden on mobile (accessible via futu
 | T22 | 6 — Deals update | Add category tabs to `app/deals/page.tsx` | ✅ |
 | T23 | 6 — Deals update | Update `lib/deals.ts` to support category filter param | ✅ |
 | T24 | 6 — Deals update | Add "Browse by category" section to `app/page.tsx` homepage | ✅ |
-| T25 | 7 — SEO | `generateMetadata()` on all new pages | ⬜ |
+| T25 | 7 — SEO | `generateMetadata()` on all new pages | ✅ |
 | T26 | 7 — SEO | Verify/update `sitemap.xml` generation | ⬜ |
 | T27 | 7 — SEO | Google Search Console submission | ⬜ |
 | T28 | 1 — Foundation | `components/DealCard.tsx` — use Dutch comma separator for percentage display (`-29,9%`) | ⬜ |

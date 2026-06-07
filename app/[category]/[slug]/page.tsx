@@ -19,6 +19,27 @@ type Props = {
   params: Promise<{ category: string; slug: string }>;
 };
 
+export async function generateMetadata({ params }: Props) {
+  const { category, slug } = await params;
+  const product = await getProductBySlug(category, slug);
+  if (!product) return {};
+
+  const hasDeal =
+    product.drop_percentage !== null &&
+    product.drop_percentage >= 10 &&
+    product.current_price !== null &&
+    product.high_30d !== null;
+
+  const description = hasDeal
+    ? `${product.name} nu ${Math.round(Number(product.drop_percentage))}% goedkoper bij Coolblue — van €${fmt(Number(product.high_30d))} voor €${fmt(Number(product.current_price))}. Bekijk de prijsgeschiedenis en ontdek het beste aankoopmoment.`
+    : `${product.name} prijs vandaag: €${fmt(Number(product.current_price ?? 0))} bij Coolblue. Bekijk de prijsgeschiedenis en ontdek het beste aankoopmoment.`;
+
+  return {
+    title: `${product.name} | TechTracker`,
+    description,
+  };
+}
+
 export default async function ProductPage({ params }: Props) {
   const { category, slug } = await params;
   const product = await getProductBySlug(category, slug);
