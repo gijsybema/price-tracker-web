@@ -60,6 +60,22 @@
 
 ---
 
+## Task: T19/T20 — Search API route + query function
+
+- **Spec tasks with a direct import dependency are one implementation slice, not two.** T19 imports T20 — implementing T19 without T20 leaves a broken state. At plan time, identify import chains and group them into one slice rather than following spec task numbers blindly.
+- **"Which fields to return?" is a technical decision, not a user question.** The right move: look at what the consuming page needs, decide, and state the assumption. Only ask when the decision has a real product tradeoff.
+- **`in_stock` gaps surface at verify when they should surface at plan time.** For any API that feeds a UI, listing the fields the consuming page needs is a plan-time checklist item, not a verify-time discovery.
+
+---
+
+## Task: T18 — DB tsvector index
+
+- **"Coordinate with backend" is too vague for a spec task description.** It didn't name the project, causing a clarification round at plan time. Next time: name the exact repo and file path in the spec (e.g. "add migration to `product_scraper/sql/migrations/`").
+- **Surface cross-repo ownership at plan time.** Before planning any DB task, ask "which repo owns this?" — one short question saves a rework loop mid-implementation.
+- **Catch local ≠ prod gaps before they block verification.** The local DB missing most data would have broken T19/T20 verification if not surfaced now. When a task depends on DB state, confirm early whether local and prod are in sync.
+
+---
+
 ## Task: T17 — Products overview page
 
 - **Pill badges must use `whitespace-nowrap` — always.** A badge that wraps its text loses its shape and stretches to fill the container. Add `whitespace-nowrap` by default to every pill/badge span.

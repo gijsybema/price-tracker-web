@@ -29,6 +29,7 @@
 - For visual design tasks: present 3–4 named options upfront and let the user choose before implementing — do not iterate one change at a time
 - At plan time, surface design questions explicitly as open questions (e.g. "which reference price do we show?", "how does this behave in a multi-retailer future?") — these decisions are cheaper to make before implementation than during testing
 - When rendering a DB field on a new page, check how existing pages render the same field first — do not derive display logic from scratch
+- For tasks that reference an external system or say "coordinate with [X]": identify the target project/repo at plan time before writing any code
 
 ## Output Style
 - Be concise and structured
