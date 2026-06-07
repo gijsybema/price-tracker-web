@@ -60,6 +60,12 @@
 
 ---
 
+## Task: T21 — Search dropdown UI
+
+- **Sort stability on ranked lists is a product decision — surface it at plan time.** `ts_rank` ties are non-deterministic. Defining tiebreakers (in-stock first, then deal size) required an extra exchange after implement. "What happens when two results score equally?" is a plan-time question for any ranked list.
+
+---
+
 ## Task: T19/T20 — Search API route + query function
 
 - **Spec tasks with a direct import dependency are one implementation slice, not two.** T19 imports T20 — implementing T19 without T20 leaves a broken state. At plan time, identify import chains and group them into one slice rather than following spec task numbers blindly.

@@ -63,7 +63,7 @@ TechTracker.nl is a Dutch deal-finder for consumer audio products (headphones, e
 - Searches product name and brand using Postgres full-text search (`tsvector`)
 - Results link to `/{category}/{slug}` product detail pages
 - Searches active products only
-- Index: `to_tsvector('simple', coalesce(name,'') || ' ' || coalesce(brand,''))` with GIN index `idx_products_fts`. Query with `plainto_tsquery('simple', $1)` and filter `active = true`.
+- Index: `to_tsvector('simple', coalesce(name,'') || ' ' || coalesce(brand,''))` with GIN index `idx_products_fts`. Query with `to_tsquery('simple', $1)` using per-token `:*` prefix matching. Results ordered by `ts_rank DESC`, in-stock first, then `price_diff DESC`.
 
 ### 2.7 Navigation
 | Label | Destination |
@@ -217,7 +217,7 @@ Search input visible in header on desktop; hidden on mobile (accessible via futu
 | T18 | 5 — Search | DB: add `tsvector` index (coordinate with backend) | ✅ |
 | T19 | 5 — Search | `app/api/search/route.ts` — search route handler | ✅ |
 | T20 | 5 — Search | `lib/search.ts` — `searchProducts(query)` | ✅ |
-| T21 | 5 — Search | Search results UI (dropdown or `/search?q=` page) — note: API does not return `in_stock`; add to `searchProducts` if out-of-stock indicator is needed | ⬜ |
+| T21 | 5 — Search | Search results UI (dropdown or `/search?q=` page) — note: API does not return `in_stock`; add to `searchProducts` if out-of-stock indicator is needed | ✅ |
 | T22 | 6 — Deals update | Add category tabs to `app/deals/page.tsx` | ⬜ |
 | T23 | 6 — Deals update | Update `lib/deals.ts` to support category filter param | ⬜ |
 | T24 | 6 — Deals update | Add "Browse by category" section to `app/page.tsx` homepage | ⬜ |
@@ -257,3 +257,4 @@ Search input visible in header on desktop; hidden on mobile (accessible via futu
 - Multi-retailer support (backend column exists; frontend deferred)
 - Social sharing buttons on product pages
 - Multi-retailer inactive handling: if a product becomes inactive at one retailer but is still available at another, the "niet meer beschikbaar" notice is misleading — revisit when multi-retailer support is added
+- Full search results page (`/search?q=`) — T21 builds dropdown only; a dedicated results page with pagination or "load more" is deferred
