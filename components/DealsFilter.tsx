@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Deal } from "@/lib/deals";
 import DealCard from "./DealCard";
 import BrandFilter from "./BrandFilter";
@@ -20,6 +20,13 @@ const ALLE_CAP = 50;
 export default function DealsFilter({ deals }: { deals: Deal[] }) {
   const [activeTab, setActiveTab] = useState<"alle" | Category>("alle");
   const [selectedBrands, setSelectedBrands] = useState<Set<string>>(new Set());
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    function onScroll() { setScrolled(window.scrollY > 200); }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   function selectTab(tab: "alle" | Category) {
     setActiveTab(tab);
@@ -52,6 +59,15 @@ export default function DealsFilter({ deals }: { deals: Deal[] }) {
 
   return (
     <div className="mt-10">
+      {scrolled && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 rounded-full bg-gray-900 px-5 py-2.5 text-sm font-medium text-white shadow-lg whitespace-nowrap"
+        >
+          ↑ Filteren · {displayed.length} deals
+        </button>
+      )}
+
       {/* Category tabs */}
       <div className="flex flex-wrap gap-x-1 border-b border-gray-200">
         {(["alle", ...CATEGORIES] as const).map((tab) => {
@@ -89,12 +105,12 @@ export default function DealsFilter({ deals }: { deals: Deal[] }) {
         </div>
       )}
 
-      {/* Result count — shown when a filter is active */}
-      {(activeTab !== "alle" || selectedBrands.size > 0) && (
-        <p className="mt-6 text-sm text-gray-500">
-          {displayed.length} {displayed.length === 1 ? "deal" : "deals"} gevonden
-        </p>
-      )}
+      {/* Result count */}
+      <p className="mt-6 text-sm text-gray-500">
+        {capActive
+          ? `${displayed.length} deals getoond`
+          : `${brandFiltered.length} ${brandFiltered.length === 1 ? "deal" : "deals"} gevonden`}
+      </p>
 
       {/* Deal grid */}
       {displayed.length === 0 ? (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import BrandFilter from "./BrandFilter";
 import SortSelect, { type SortKey } from "./SortSelect";
@@ -128,6 +128,13 @@ type Props = {
 export default function CategoryProductGrid({ products, category }: Props) {
   const [selectedBrands, setSelectedBrands] = useState<Set<string>>(new Set());
   const [sortKey, setSortKey] = useState<SortKey>("discount");
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    function onScroll() { setScrolled(window.scrollY > 200); }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const brands = [...new Set(products.map((p) => p.brand))].sort();
 
@@ -152,6 +159,15 @@ export default function CategoryProductGrid({ products, category }: Props) {
 
   return (
     <div>
+      {scrolled && (
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-1.5 rounded-full bg-gray-900 px-5 py-2.5 text-sm font-medium text-white shadow-lg whitespace-nowrap"
+        >
+          ↑ Filteren · {sorted.length} producten
+        </button>
+      )}
+
       <div className="mt-8">
         <BrandFilter
           brands={brands}

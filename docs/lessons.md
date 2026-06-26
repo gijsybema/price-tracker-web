@@ -106,6 +106,14 @@
 
 ---
 
+## Task: T29 — Mobile filter FAB
+
+- **Settle label copy precisely in the DoD.** "Filter count vs product count" and "always show vs conditional" were decided across 3+ turns after implementation started. Both belong in the DoD discussion, not post-verify back-and-forth.
+- **When using a count variable, trace its derivation chain.** `displayed.length` looked right but was capped at 50, causing FAB/page inconsistency on the Alle tab. Before picking a count variable, ask: "has this been sliced, capped, or transformed relative to what the user expects?"
+- **CLAUDE.md rules are most useful when applied at implement time, not verify time.** `whitespace-nowrap` was missed during implementation and caught only at verify. A quick "does every new pill/badge have `whitespace-nowrap`?" check while coding avoids the rework.
+
+---
+
 ## Task: T17 — Products overview page
 
 - **Pill badges must use `whitespace-nowrap` — always.** A badge that wraps its text loses its shape and stretches to fill the container. Add `whitespace-nowrap` by default to every pill/badge span.
