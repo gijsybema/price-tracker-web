@@ -61,7 +61,7 @@ export default function DealCard({ deal }: { deal: Deal }) {
             </div>
 
             <span className="shrink-0 rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">
-              -{Number(deal.price_drop_pct).toFixed(1)}%
+              -{Number(deal.price_drop_pct).toLocaleString("nl-NL", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%
             </span>
           </div>
 
