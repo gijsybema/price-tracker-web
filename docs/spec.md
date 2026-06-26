@@ -29,6 +29,7 @@ TechTracker.nl is a Dutch deal-finder for consumer audio products (headphones, e
 - Default tab: Alle
 - Top 50 deals on Alle tab (cap lifted when brand filter is active); all deals shown on category tabs. Sorted by biggest absolute discount (€).
 - Brand filter: narrows results within the active tab; resets on tab change.
+- Spec filters: category-specific boolean/enum filters derived from the JSONB specs column (e.g. "Noise Cancelling" toggle on Headphones/Earbuds tab); hidden on the "Alle" tab
 - Deal card contains: product image, product name, old price, new price, discount amount, CTA → Coolblue affiliate link
 - Secondary "Bekijk product" link on deal card → `/{category}/{slug}` product detail page
 - Only active, in-stock products shown
@@ -39,6 +40,7 @@ TechTracker.nl is a Dutch deal-finder for consumer audio products (headphones, e
 - Each product card links to its product detail page (`/{category}/{slug}`)
 - Products currently on deal are visually highlighted (e.g. deal badge)
 - Brand filter: filter product list by brand (e.g. Sony, Bose, JBL)
+- Spec filters: category-specific boolean/enum filters derived from the JSONB specs column (e.g. "Noise Cancelling" toggle for headphones/earbuds, "Draadloos" for speakers); derived at runtime from the available spec keys in the product list
 - Sort options: biggest discount, price low→high, price high→low
 - Inactive products excluded
 
@@ -49,6 +51,7 @@ TechTracker.nl is a Dutch deal-finder for consumer audio products (headphones, e
 - Deal badge (🏷️ Deal) when `price_diff ≥ €25` AND `current_price > €100` — same threshold as category page badge
 - In-stock indicator
 - Specs section — display JSONB specs blob, keyed by category (e.g. driver size, noise cancellation for headphones)
+- Lowest-price-ever indicator — show "Laagste prijs ooit" label + the all-time low price derived from price history; highlight when current price equals (or is within a small threshold of) that low
 - Price history chart — 30/60/90 day toggle, line chart of daily price; periods without sufficient data are disabled
 - No retailer description (copyright risk)
 - **Inactive product handling:** if product is inactive, show "Dit product is niet meer beschikbaar" notice + price history (still valuable) + "Bekijk vergelijkbare producten" link to the category page
@@ -74,7 +77,7 @@ TechTracker.nl is a Dutch deal-finder for consumer audio products (headphones, e
 
 Logo links to `/` (home). Over ons (`/about`) and Hoe werkt het (`/how-it-works`) are linked from the footer, not the primary nav.
 
-Search input visible in header on desktop; hidden on mobile (accessible via future mobile search UX).
+Search input visible in header on desktop; hidden on mobile — accessible via a search icon in the header that expands an inline input (or slides a search bar into view below the header).
 
 ---
 
@@ -168,11 +171,17 @@ Search input visible in header on desktop; hidden on mobile (accessible via futu
 1. Add `tsvector` index on `products` table (migration or DB-side)
 2. Build `/api/search` route handler
 3. Wire up search UI in header (input → results dropdown or results page)
+4. Mobile search: search icon in header expands inline input on tap
 
 ### Phase 6 — Deals page update
 1. Add category filter tabs to `/deals`
 2. Update deal queries to support per-category filtering
 3. Add "Browse by category" section to homepage
+
+### Phase 8 — UX enhancements
+1. Mobile search bar in header
+2. Lowest-price-ever indicator on product detail page
+3. Spec-based filters on category pages and deals page
 
 ### Phase 7 — SEO & meta
 1. Add `generateMetadata()` to all new pages
@@ -231,6 +240,10 @@ Search input visible in header on desktop; hidden on mobile (accessible via futu
 | T31 | 8 — Dev tooling | `product_scraper/scripts/refresh_local_db.sh` — dump subset of prod into local DB to keep local in sync | ⬜ |
 | T32 | 6 — Deals update | DealCard redesign — new look and feel; add secondary "Bekijk product" link to `/{category}/{slug}` | ⬜ |
 | T33 | 7 — SEO | Improve website copy for SEO — review and rewrite page headings, body text, and static metadata descriptions across all pages for keyword relevance and Dutch search intent | ⬜ |
+| T34 | 8 — UX | Mobile search bar — search icon in header expands inline input on tap (desktop input unchanged); close on Escape or outside tap | ⬜ |
+| T35 | 8 — UX | Lowest-price-ever indicator on product detail page — query all-time low from price history, show "Laagste prijs ooit: €X" label; highlight when current price ≤ all-time low (or within threshold TBD) | ⬜ |
+| T36 | 8 — UX | Spec-based filters on category pages and deals page — category-specific boolean/enum toggles from JSONB specs (e.g. Noise Cancelling for headphones/earbuds); plan which spec keys to expose per category before implementing | ⬜ |
+| T37 | 8 — UX | Make deal card text selectable — replace outer `<a>` wrapper with a `div` + stretched-link pattern (`after:absolute after:inset-0` on the CTA anchor) so the card stays fully clickable while allowing text selection | ⬜ |
 
 ---
 
