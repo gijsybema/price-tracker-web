@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Lightbulb, Sparkles } from "lucide-react";
 import { getProductBySlug, getPriceHistory } from "../../../lib/products";
 import PriceHistoryChart from "../../../components/PriceHistoryChart";
 import SpecsTable from "../../../components/SpecsTable";
@@ -61,6 +62,10 @@ export default async function ProductPage({ params }: Props) {
     Number(product.price_diff) >= 25 &&
     product.current_price !== null &&
     Number(product.current_price) > 100;
+
+  // Guard against empty/whitespace-only AI copy, not just null
+  const dealInsight = product.ai_deal_description?.trim();
+  const aboutText = product.ai_description?.trim();
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
@@ -137,6 +142,20 @@ export default async function ProductPage({ params }: Props) {
                 </p>
               )}
 
+              {/* AI deal description — only when in stock */}
+              {dealInsight && product.in_stock && (
+                <div className="rounded-xl border border-blue-200 bg-blue-50 px-3.5 py-3">
+                  <div className="mb-1 flex items-center gap-1.5">
+                    <Lightbulb className="h-4 w-4 text-blue-600" aria-hidden="true" />
+                    <span className="text-sm font-semibold text-blue-800">Prijs inzicht</span>
+                    <span className="ml-auto inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">
+                      <Sparkles className="h-3 w-3" aria-hidden="true" />AI
+                    </span>
+                  </div>
+                  <p className="text-sm leading-relaxed text-blue-900">{dealInsight}</p>
+                </div>
+              )}
+
               {/* Affiliate CTA */}
               <div className="mt-4">
                 <a
@@ -167,6 +186,16 @@ export default async function ProductPage({ params }: Props) {
           )}
         </div>
       </div>
+
+      {/* AI product description */}
+      {aboutText && (
+        <section className="mt-12">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+            <h2 className="mb-1.5 text-base font-semibold text-gray-900">Over dit product</h2>
+            <p className="text-sm leading-relaxed text-gray-600">{aboutText}</p>
+          </div>
+        </section>
+      )}
 
       {/* Price history */}
       {history.length > 0 && (

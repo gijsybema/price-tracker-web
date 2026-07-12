@@ -21,6 +21,8 @@ export type Product = {
   product_url: string;
   image_url: string | null;
   specs: Record<string, unknown> | null;
+  ai_description: string | null;
+  ai_deal_description: string | null;
   active: boolean;
   current_price: number | null;
   in_stock: boolean | null;
@@ -45,6 +47,8 @@ export async function getProductBySlug(
         p.product_url,
         p.image_url,
         p.specs,
+        p.ai_description,
+        p.ai_deal_description,
         p.active,
         ph.price        AS current_price,
         ph.availability AS in_stock,

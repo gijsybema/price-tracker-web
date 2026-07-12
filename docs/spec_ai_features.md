@@ -7,18 +7,18 @@
 
 ## Task overview
 
-| Task | Feature | Description |
-|---|---|---|
-| T1 | F1 | Extend `getProductBySlug` query and `Product` type with `ai_description` and `ai_deal_description` |
-| T2 | F1 | Display `ai_deal_description` inside price block (between badges and CTA button) |
-| T3 | F1 | Display `ai_description` in new section between price block and price history chart |
-| T4 | F2 | Manual DB setup: enable pgvector, add `embedding` column, add IVFFlat index (Railway console) |
-| T5 | F2 | Add `openai` npm package and `OPENAI_API_KEY` to `.env.local` |
-| T6 | F2 | Create `lib/embeddings.ts` — `generateEmbedding()` using OpenAI `text-embedding-3-small` |
-| T7 | F2 | Create `lib/semantic-search.ts` — pgvector cosine similarity query returning `SearchResult[]` |
-| T8 | F2 | Create `app/actions/semantic-search.ts` — Server Action wrapping T6 + T7 |
-| T9 | F2 | Create `components/SemanticSearch.tsx` — textarea input, loading state, result cards |
-| T10 | F2 | Wire `SemanticSearch` into `app/page.tsx` below hero, above top deals |
+| Done | Task | Feature | Description |
+|---|---|---|---|
+| ✅ | T1 | F1 | Extend `getProductBySlug` query and `Product` type with `ai_description` and `ai_deal_description` |
+| ✅ | T2 | F1 | Display `ai_deal_description` inside price block (between badges and CTA button) |
+| ✅ | T3 | F1 | Display `ai_description` in new section between price block and price history chart |
+| ⬜ | T4 | F2 | Manual DB setup: enable pgvector, add `embedding` column, add IVFFlat index (Railway console) |
+| ⬜ | T5 | F2 | Add `openai` npm package and `OPENAI_API_KEY` to `.env.local` |
+| ⬜ | T6 | F2 | Create `lib/embeddings.ts` — `generateEmbedding()` using OpenAI `text-embedding-3-small` |
+| ⬜ | T7 | F2 | Create `lib/semantic-search.ts` — pgvector cosine similarity query returning `SearchResult[]` |
+| ⬜ | T8 | F2 | Create `app/actions/semantic-search.ts` — Server Action wrapping T6 + T7 |
+| ⬜ | T9 | F2 | Create `components/SemanticSearch.tsx` — textarea input, loading state, result cards |
+| ⬜ | T10 | F2 | Wire `SemanticSearch` into `app/page.tsx` below hero, above top deals |
 
 ---
 
@@ -34,8 +34,10 @@
 | FTS header search | Kept as-is | Semantic search is a separate homepage experience |
 | ai_description null handling | Silent hide | |
 | ai_deal_description null handling | Show whenever non-null, regardless of deal badge threshold | Scraper writes it on every price change, not only at deal thresholds |
-| ai_deal_description placement | Inside price block, between price/badges and CTA button — subject to fit review | 1–2+ sentence deal context supports buy decision at the right moment |
-| ai_description placement | Section between price block and price history chart | Static product info, not time-sensitive |
+| ai_deal_description stock handling | Only render when product is in stock (in_stock = true) | Scraper keeps generating/updating ai_deal_description while OOS too, so it's ready when the product comes back in stock — the web app must gate display on availability itself |
+| ai_deal_description placement | Inside price block, below the in-stock line, above the CTA button | 1–2+ sentence deal context supports buy decision at the right moment |
+| ai_deal_description styling | Blue "Prijs inzicht" insight card with Lightbulb + "AI" badge (lucide-react) | Amber read as ugly/cluttered; blue reads as neutral insight, AI badge makes generated origin explicit |
+| ai_description placement | Card section between price block and price history chart | Static product info, not time-sensitive |
 | Semantic search scope | Homepage only (for now) | |
 | Semantic search trigger | Submit button (not live/debounced) | Avoids OpenAI API call per keystroke |
 | Homepage placement | Below hero, above top deals | |
@@ -54,6 +56,10 @@
 ### DB changes
 
 None. Both columns already exist in the `products` table.
+
+### New dependency
+
+`lucide-react` — icons on the product page (`Lightbulb`, `Sparkles` in the deal insight card).
 
 ---
 
@@ -74,10 +80,10 @@ None. Both columns already exist in the `products` table.
 
 **File:** `app/[category]/[slug]/page.tsx`
 
-- Render `ai_deal_description` inside the price block, between the price/badges row and the "Bekijk bij Coolblue" CTA button
-- Condition: only render if non-null
-- Styling: `rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-sm text-amber-800`
-- Note: actual length of the copy may be longer than 1–2 sentences — verify fit during implementation and adjust layout if needed (e.g. move below CTA if it crowds the price block)
+- Render `ai_deal_description` inside the price block, below the in-stock line and above the "Bekijk bij Coolblue" CTA button
+- Condition: only render if non-empty (trimmed) AND `in_stock` is true
+- Styling: blue insight card — `rounded-xl border border-blue-200 bg-blue-50 px-3.5 py-3`; header row with a `Lightbulb` icon + "Prijs inzicht" (`text-blue-800`) and a right-aligned "AI" pill (`Sparkles` icon, `bg-blue-100 text-blue-800`, `whitespace-nowrap`); body `text-sm leading-relaxed text-blue-900`
+- Icons from `lucide-react` (`Lightbulb`, `Sparkles`), marked `aria-hidden`
 
 ---
 
@@ -86,11 +92,11 @@ None. Both columns already exist in the `products` table.
 **File:** `app/[category]/[slug]/page.tsx`
 
 - Add a new section between the price block and the price history chart
-- Condition: only render if non-null
-- Layout:
+- Condition: only render if non-empty (trimmed)
+- Layout: wrapped in a subtle card — `rounded-xl border border-gray-200 bg-gray-50 p-5`
   ```
-  Over dit product          ← text-base font-semibold text-gray-900 mb-1
-  "{ai_description}"        ← text-sm text-gray-600 leading-relaxed
+  Over dit product          ← text-base font-semibold text-gray-900 mb-1.5
+  {ai_description}           ← text-sm text-gray-600 leading-relaxed (no quotes)
   ```
 
 ---

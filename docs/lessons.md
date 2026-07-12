@@ -121,3 +121,12 @@
 - **Image selection for representative thumbnails is a data/design decision — surface it in planning.** "Which product image represents the category?" has real UX implications (most expensive → stable flagship; biggest deal → changes constantly). Raising it before implementation saved a post-implement discussion.
 
 ---
+
+## Task: T1–T3 — AI product descriptions on product page
+
+- **Rendered mockups beat prose for look-and-feel calls.** Showing the deal box as 4 rendered options (colors, icons, AI badge in context) let the choice land in one message — far faster than describing colors or iterating live on the real page. Render, don't describe, when the decision is visual.
+- **Pin "no value" semantics before building a display on a scraper field.** The empty-string vs `NULL` edge case surfaced in verify, not planning, because the spec only said "non-null." For scraper-written text fields, ask up front how "no value" is stored (`NULL` vs `""`) and guard with a trimmed check.
+- **Small explicit forks avoid silent rework.** The lucide-react-vs-inline-SVG question was a genuine dependency decision — a quick confirm was cheaper than guessing and being told to undo it.
+- **Data-first slicing paid off.** Doing T1 (query + type) before T2/T3 (UI) meant each slice typechecked independently, and the later redesign rode entirely on the UI layer without touching `lib/products.ts`.
+
+---
