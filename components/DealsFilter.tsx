@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import type { Deal } from "@/lib/deals";
 import DealCard from "./DealCard";
 import BrandFilter from "./BrandFilter";
+import PriceFilter from "./PriceFilter";
 
 const CATEGORIES = ["headphones", "earbuds", "speakers", "soundbars"] as const;
 type Category = (typeof CATEGORIES)[number];
@@ -20,6 +21,8 @@ const ALLE_CAP = 50;
 export default function DealsFilter({ deals }: { deals: Deal[] }) {
   const [activeTab, setActiveTab] = useState<"alle" | Category>("alle");
   const [selectedBrands, setSelectedBrands] = useState<Set<string>>(new Set());
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -31,6 +34,8 @@ export default function DealsFilter({ deals }: { deals: Deal[] }) {
   function selectTab(tab: "alle" | Category) {
     setActiveTab(tab);
     setSelectedBrands(new Set());
+    setMinPrice("");
+    setMaxPrice("");
   }
 
   function toggleBrand(brand: string) {
@@ -54,8 +59,21 @@ export default function DealsFilter({ deals }: { deals: Deal[] }) {
       ? tabDeals
       : tabDeals.filter((d) => selectedBrands.has(d.brand));
 
-  const capActive = activeTab === "alle" && selectedBrands.size === 0;
-  const displayed = capActive ? brandFiltered.slice(0, ALLE_CAP) : brandFiltered;
+  const min = minPrice !== "" && !isNaN(Number(minPrice)) ? Number(minPrice) : null;
+  const max = maxPrice !== "" && !isNaN(Number(maxPrice)) ? Number(maxPrice) : null;
+
+  const priceFiltered =
+    min === null && max === null
+      ? brandFiltered
+      : brandFiltered.filter((d) => {
+          const price = Number(d.current_price);
+          if (min !== null && price < min) return false;
+          if (max !== null && price > max) return false;
+          return true;
+        });
+
+  const capActive = activeTab === "alle" && selectedBrands.size === 0 && min === null && max === null;
+  const displayed = capActive ? priceFiltered.slice(0, ALLE_CAP) : priceFiltered;
 
   return (
     <div className="mt-10">
@@ -105,11 +123,25 @@ export default function DealsFilter({ deals }: { deals: Deal[] }) {
         </div>
       )}
 
+      {/* Price filter */}
+      <div className="mt-4">
+        <PriceFilter
+          min={minPrice}
+          max={maxPrice}
+          onMinChange={setMinPrice}
+          onMaxChange={setMaxPrice}
+          onClear={() => {
+            setMinPrice("");
+            setMaxPrice("");
+          }}
+        />
+      </div>
+
       {/* Result count */}
       <p className="mt-6 text-sm text-gray-500">
         {capActive
           ? `${displayed.length} deals getoond`
-          : `${brandFiltered.length} ${brandFiltered.length === 1 ? "deal" : "deals"} gevonden`}
+          : `${priceFiltered.length} ${priceFiltered.length === 1 ? "deal" : "deals"} gevonden`}
       </p>
 
       {/* Deal grid */}

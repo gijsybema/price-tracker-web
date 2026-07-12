@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import BrandFilter from "./BrandFilter";
+import PriceFilter from "./PriceFilter";
 import SortSelect, { type SortKey } from "./SortSelect";
 import type { Product } from "../lib/products";
 
@@ -127,6 +128,8 @@ type Props = {
 
 export default function CategoryProductGrid({ products, category }: Props) {
   const [selectedBrands, setSelectedBrands] = useState<Set<string>>(new Set());
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("discount");
   const [scrolled, setScrolled] = useState(false);
 
@@ -155,7 +158,21 @@ export default function CategoryProductGrid({ products, category }: Props) {
       ? products
       : products.filter((p) => selectedBrands.has(p.brand));
 
-  const sorted = sortProducts(brandFiltered, sortKey);
+  const min = minPrice !== "" && !isNaN(Number(minPrice)) ? Number(minPrice) : null;
+  const max = maxPrice !== "" && !isNaN(Number(maxPrice)) ? Number(maxPrice) : null;
+
+  const priceFiltered =
+    min === null && max === null
+      ? brandFiltered
+      : brandFiltered.filter((p) => {
+          if (p.current_price === null) return false;
+          const price = Number(p.current_price);
+          if (min !== null && price < min) return false;
+          if (max !== null && price > max) return false;
+          return true;
+        });
+
+  const sorted = sortProducts(priceFiltered, sortKey);
 
   return (
     <div>
@@ -177,9 +194,22 @@ export default function CategoryProductGrid({ products, category }: Props) {
         />
       </div>
 
+      <div className="mt-4">
+        <PriceFilter
+          min={minPrice}
+          max={maxPrice}
+          onMinChange={setMinPrice}
+          onMaxChange={setMaxPrice}
+          onClear={() => {
+            setMinPrice("");
+            setMaxPrice("");
+          }}
+        />
+      </div>
+
       <div className="mt-4 flex items-center justify-between">
         <p className="text-sm text-gray-500">
-          {selectedBrands.size > 0
+          {selectedBrands.size > 0 || min !== null || max !== null
             ? `${sorted.length} ${sorted.length === 1 ? "product" : "producten"} gevonden`
             : ""}
         </p>

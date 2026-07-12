@@ -130,3 +130,11 @@
 - **Data-first slicing paid off.** Doing T1 (query + type) before T2/T3 (UI) meant each slice typechecked independently, and the later redesign rode entirely on the UI layer without touching `lib/products.ts`.
 
 ---
+
+## Task: T30 — Price filter on category pages + deals page
+
+- **Scope grows naturally in design-decision tasks — that's fine, catch it at the question stage.** T30 named "category pages" only, but discussing bucket-vs-min/max naturally surfaced the deals page gap. Asking "what about X?" before implementing kept it one clean slice instead of a follow-up task.
+- **Category-relative bucket ranges are a real trap.** Fixed price buckets (`<€50`, `€200+`) look reasonable until you remember a €30 earbud category and a €1500 soundbar category can't share one scale. Any preset/bucket UI over a numeric field that varies by category should default to suspicion, not to buckets.
+- **Reusing one filter component across two pages kept the diff small and consistent.** The same `PriceFilter` component was wired into both `CategoryProductGrid` and `DealsFilter`, mirroring `BrandFilter`'s existing reset-on-tab-change and cap-disabling pattern rather than inventing a new one.
+
+---
