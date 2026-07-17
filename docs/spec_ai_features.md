@@ -29,7 +29,8 @@
 | Embedding provider | OpenAI `text-embedding-3-small` (1536 dims) | Cheap (<€0.01 for 800 products), reliable, good multilingual quality |
 | Embedding generation | Scraper repo (Python) | Scraper already generates ai_description/ai_deal_description; embeddings belong in the same pipeline |
 | Query-time embedding | This repo (`lib/embeddings.ts`) | Web app must embed user queries at search time |
-| What to embed | name + brand + category + ai_description + specs as key/value text + price tier | Rich signal for audio product semantic matching |
+| What to embed | name + brand + category + ai_description + specs as key/value text | Price deliberately excluded — see product_scraper/docs/spec_embeddings.md §5 "Why price is excluded" (embeddings are never regenerated, so baked-in price/tier would drift permanently as prices change) |
+| Price/deal-aware ranking in semantic search | Not yet designed — open follow-up | Since price isn't in the vector, any "rank cheaper/deal products higher" behavior needs its own hybrid logic (e.g. blending `p.embedding <=> $1::vector` with a price/discount signal, or a post-filter) in T7's query. Revisit before or after T7 ships. |
 | Query-time filter extraction | Not implemented | Avoids LLM latency per search; hard SQL filters suffice |
 | FTS header search | Kept as-is | Semantic search is a separate homepage experience |
 | ai_description null handling | Silent hide | |
@@ -214,6 +215,8 @@ LIMIT $2
 
 Embedding passed as `[${embedding.join(',')}]` with `::vector` cast.
 Returns `SearchResult[]` — same type already used by FTS search.
+
+**Open follow-up:** this query currently joins `price_history` only for *display* (`current_price`, `price_diff`, `drop_percentage`) — ranking is pure vector cosine distance, with no price or deal awareness. Decide before shipping T7 whether/how to blend price signal into ranking (e.g. boost in-stock deals, or a secondary sort key) or defer explicitly as out of scope.
 
 ---
 
