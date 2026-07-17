@@ -138,3 +138,12 @@
 - **Reusing one filter component across two pages kept the diff small and consistent.** The same `PriceFilter` component was wired into both `CategoryProductGrid` and `DealsFilter`, mirroring `BrandFilter`'s existing reset-on-tab-change and cap-disabling pattern rather than inventing a new one.
 
 ---
+
+## Task: T6/T7/T11 — Semantic search backend (embeddings, pgvector query, brand options)
+
+- **Verifying vector search against real data caught a silent, feature-breaking bug no type-check would.** Running actual queries during verify exposed `maxPrice=100` returning 0 of 170 matching products — pgvector's IVFFlat default `probes=1` under-recalls the moment a hard filter is applied (it filters *after* scanning ~1% of vectors). For approximate-index + filter combos, "it compiles and returns some rows" is not verification; check recall against ground-truth counts.
+- **The hard part was a data-modeling distinction, not code: the vector encodes *semantics*, price/brand are *facts*.** Naming that fork early — facts need an explicit source (UI controls), not the embedding or the query text — set the whole design and let LLM query-parsing be deferred cleanly as phase 2. Settling it before writing code avoided building the wrong thing.
+- **Reused existing DB fields (`ai_description`/`ai_deal_description`) for the "AI recommendation" feel instead of a per-search LLM call.** Inventorying what the pipeline already produces beat adding cost, latency, and hallucination risk. Check for existing assets before reaching for a new API.
+- **Calibrated magic numbers on measured data, not guesses.** Sampling real query distances (0.35–0.45 relevant vs 0.6+ off-topic) turned the `0.55` relevance cutoff from arbitrary into defensible — and surfaced the honest-empty-state win: off-topic searches now return nothing instead of unrelated products.
+
+---

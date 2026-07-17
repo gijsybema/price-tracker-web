@@ -33,6 +33,7 @@
 - For custom search inputs, use `type="text"` not `type="search"` — the browser's native Escape-to-clear conflicts with custom dropdown and keyboard UX
 - For small fixed-size thumbnails (≤ 64px) in dropdowns or lists, use a plain `<img>` tag — `next/image` with `fill` requires a `sizes` prop and adds unnecessary complexity at small sizes
 - `pg` returns `numeric`/`decimal` columns as strings at runtime despite TypeScript typing them as `number` — always coerce with `Number()` before calling `.toFixed()` or passing to arithmetic
+- For vector / ANN similarity search combined with hard filters (price, brand, availability), verify **recall against ground-truth counts** with real queries — approximate indexes (e.g. pgvector IVFFlat) apply `WHERE` filters *after* the index scan, so a low `probes` value silently returns far fewer rows (often zero) than actually match. Type-checks and "it returned some rows" do not catch this.
 - For copy/text tasks with multiple valid approaches: present 3–4 named options with a concrete rendered example and let the user choose — do not iterate one change at a time
 
 ## Output Style

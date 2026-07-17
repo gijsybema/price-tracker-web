@@ -11,6 +11,10 @@ export type SearchResult = {
   in_stock: boolean | null;
   price_diff: number | null;
   drop_percentage: number | null;
+  // Optional: populated by semantic search (T7) for the top-match AI text.
+  // The FTS query does not select these, so they stay undefined there.
+  ai_description?: string | null;
+  ai_deal_description?: string | null;
 };
 
 // Builds a prefix-matching tsquery: "son bra" → "son:* & bra:*"
@@ -21,6 +25,32 @@ function buildFtsQuery(raw: string): string {
     .split(/\s+/)
     .filter(Boolean);
   return tokens.map((t) => `${t}:*`).join(" & ");
+}
+
+// Distinct brands of active, in-stock products — for the semantic search brand filter.
+export async function getSearchBrands(): Promise<string[]> {
+  try {
+    const result = await pool.query<{ brand: string }>(`
+      SELECT DISTINCT p.brand
+      FROM products p
+      LEFT JOIN LATERAL (
+        SELECT availability
+        FROM price_history
+        WHERE product_id = p.id
+        ORDER BY scraped_at DESC
+        LIMIT 1
+      ) ph ON true
+      WHERE p.active = true
+        AND p.brand IS NOT NULL
+        AND p.brand <> ''
+        AND ph.availability = true
+      ORDER BY p.brand ASC
+    `);
+    return result.rows.map((r) => r.brand);
+  } catch (error) {
+    console.error("Database error in getSearchBrands:", error);
+    return [];
+  }
 }
 
 export async function searchProducts(query: string): Promise<SearchResult[]> {
