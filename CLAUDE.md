@@ -34,6 +34,8 @@
 - For small fixed-size thumbnails (≤ 64px) in dropdowns or lists, use a plain `<img>` tag — `next/image` with `fill` requires a `sizes` prop and adds unnecessary complexity at small sizes
 - `pg` returns `numeric`/`decimal` columns as strings at runtime despite TypeScript typing them as `number` — always coerce with `Number()` before calling `.toFixed()` or passing to arithmetic
 - For vector / ANN similarity search combined with hard filters (price, brand, availability), verify **recall against ground-truth counts** with real queries — approximate indexes (e.g. pgvector IVFFlat) apply `WHERE` filters *after* the index scan, so a low `probes` value silently returns far fewer rows (often zero) than actually match. Type-checks and "it returned some rows" do not catch this.
+- When local dev environment variables are added or changed (new API key, new required env var), the running `npm run dev` process must be restarted — Next.js only reads `.env.local` at process start, not on file change.
+- Don't truncate/clamp user-facing AI-generated or long-form text as a default "tidiness" choice — confirm with the user first. What reads as clean in a mockup can read as broken/cut-off once real (long) content is live.
 - For copy/text tasks with multiple valid approaches: present 3–4 named options with a concrete rendered example and let the user choose — do not iterate one change at a time
 
 ## Output Style

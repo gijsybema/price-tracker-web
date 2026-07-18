@@ -1,8 +1,10 @@
 import Link from "next/link";
 import DealCard from "../components/DealCard";
 import CategoryCard from "../components/CategoryCard";
+import SemanticSearch from "../components/SemanticSearch";
 import { getHomepageDeals } from "../lib/deals";
 import { getCategorySummaries } from "../lib/products";
+import { getSearchBrands } from "../lib/search";
 
 export const revalidate = 300;
 
@@ -13,9 +15,10 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const [{ deals, error }, summaries] = await Promise.all([
+  const [{ deals, error }, summaries, searchBrands] = await Promise.all([
     getHomepageDeals(),
     getCategorySummaries(),
+    getSearchBrands(),
   ]);
 
   const summaryMap = Object.fromEntries(summaries.map((s) => [s.category, s]));
@@ -56,6 +59,20 @@ export default async function Home() {
             </div>
           </div>
 
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-10">
+        <div className="max-w-2xl">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+            Zoek met AI
+          </h2>
+          <p className="mt-3 text-gray-600">
+            Beschrijf wat je zoekt en wij vinden de beste match.
+          </p>
+        </div>
+        <div className="mt-6">
+          <SemanticSearch brands={searchBrands} />
         </div>
       </section>
 

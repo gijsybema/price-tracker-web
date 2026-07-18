@@ -12,6 +12,46 @@ This file is gitignored and must be created manually. Use the production read-on
 
 The app will fail to fetch any data without this variable set.
 
+### AI semantic search (`OPENAI_API_KEY`)
+
+The homepage "Zoek met AI" feature calls the OpenAI API to embed search queries. Add your key to `.env.local` alongside `DATABASE_URL`:
+
+```bash
+OPENAI_API_KEY=sk-...
+```
+
+**Next.js only reads `.env.local` when the dev server starts** — if you add or change `OPENAI_API_KEY` while `npm run dev` is already running, stop it (Ctrl+C) and start it again. Otherwise the search will fail with a generic "Er is iets misgegaan" error.
+
+**If you're on a machine with Norton (or similar antivirus doing HTTPS interception):** the dev server may fail to reach `api.openai.com` with a TLS error (`UNABLE_TO_VERIFY_LEAF_SIGNATURE` / "unable to verify the first certificate"), even though `DATABASE_URL`-backed pages work fine. This happens because Norton re-signs outbound HTTPS traffic with its own local root CA, which Node doesn't trust by default. Fix by pointing Node at Norton's CA bundle before starting the dev server — the exact command depends on your shell:
+
+**PowerShell** (default on Windows; set `$env:`, not `set` — `set` is a different command in PowerShell and won't work):
+```powershell
+# one-off, current window only — must run in the same window as npm run dev
+$env:NODE_EXTRA_CA_CERTS = "C:\ProgramData\Norton\Antivirus\wscert.pem"
+npm run dev
+```
+Or set it permanently for your user account (affects new terminal windows only, run once):
+```powershell
+[Environment]::SetEnvironmentVariable("NODE_EXTRA_CA_CERTS", "C:\ProgramData\Norton\Antivirus\wscert.pem", "User")
+```
+
+**cmd.exe:**
+```cmd
+set NODE_EXTRA_CA_CERTS=C:\ProgramData\Norton\Antivirus\wscert.pem
+npm run dev
+```
+Or permanently: `setx NODE_EXTRA_CA_CERTS "C:\ProgramData\Norton\Antivirus\wscert.pem"` (new terminals only).
+
+**Git Bash / WSL:**
+```bash
+export NODE_EXTRA_CA_CERTS="C:\ProgramData\Norton\Antivirus\wscert.pem"
+npm run dev
+```
+
+Either way, the variable must be set in the **same terminal session**, **before** `npm run dev` starts — a permanent/`setx` change only takes effect in terminals opened *after* you set it, not the one you're currently using.
+
+This is a local-dev-only workaround — production deployments (Vercel, Railway, etc.) don't sit behind Norton and are unaffected.
+
 ## Getting Started
 
 First, run the development server:

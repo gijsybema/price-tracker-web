@@ -147,3 +147,12 @@
 - **Calibrated magic numbers on measured data, not guesses.** Sampling real query distances (0.35–0.45 relevant vs 0.6+ off-topic) turned the `0.55` relevance cutoff from arbitrary into defensible — and surfaced the honest-empty-state win: off-topic searches now return nothing instead of unrelated products.
 
 ---
+
+## Task: T8/T9/T10/T13 — Semantic search UI (Server Action, component, homepage wiring, UX polish)
+
+- **A working dev server is a testing prerequisite that's easy to silently invalidate.** Two separate "it errors and I don't know why" moments turned out to be stale process environment, not code bugs: `OPENAI_API_KEY` added after `npm run dev` was already running (Next only reads `.env.local` at process start), and Norton's HTTPS-interception CA cert missing from the dev server's environment. Check the server's actual environment before assuming the code is broken.
+- **Design mockups upfront prevented a full redesign later.** Rendering the three top-match layout options as an actual visual mockup (not prose) let the banner decision get made once, correctly — later UI feedback (icon, Enter-to-search, full text) was refinement, not scrap-and-redo.
+- **"Truncate for tidiness" was the wrong default — should have asked, not assumed.** Line-clamping `ai_description`/`ai_deal_description` to look tidy in the mockup directly contradicted user preference once seen live (cut-off text reads as broken, not clean). Treat truncation of user-facing copy as a design choice to confirm, not an implementation detail to just pick.
+- **Screenshot/zoom capture can silently fail mid-session while the app underneath is fine.** When visual tools time out, DOM inspection via `javascript_tool` (measuring `scrollHeight`/`clientHeight`, computed styles) is a reliable fallback for verifying layout facts without a picture.
+
+---

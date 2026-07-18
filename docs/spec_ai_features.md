@@ -17,11 +17,14 @@
 | ✅ | T5 | F2 | Add `openai` npm package and `OPENAI_API_KEY` to `.env.local` |
 | ✅ | T6 | F2 | Create `lib/embeddings.ts` — `generateEmbedding()` using OpenAI `text-embedding-3-small` |
 | ✅ | T7 | F2 | Create `lib/semantic-search.ts` — pgvector cosine similarity query returning `SearchResult[]` |
-| ⬜ | T8 | F2 | Create `app/actions/semantic-search.ts` — Server Action wrapping T6 + T7 |
-| ⬜ | T9 | F2 | Create `components/SemanticSearch.tsx` — textarea + price/brand filters, loading state, result cards (OOS indicator; top match shows existing AI text) |
-| ⬜ | T10 | F2 | Wire `SemanticSearch` into `app/page.tsx` below hero, above top deals |
+| ✅ | T8 | F2 | Create `app/actions/semantic-search.ts` — Server Action wrapping T6 + T7 |
+| ✅ | T9 | F2 | Create `components/SemanticSearch.tsx` — textarea + price/brand filters, loading state, result cards (OOS indicator; top match shows existing AI text) |
+| ✅ | T10 | F2 | Wire `SemanticSearch` into `app/page.tsx` below hero, above top deals |
 | ✅ | T11 | F2 | Add `getSearchBrands()` — distinct active-product brands for the brand filter dropdown |
 | ⬜ | T12 | F2 | Add per-IP rate limiting to the `searchSemantic` Server Action (T8) — short-circuit before the OpenAI call |
+| ✅ | T13 | F2 | Search UX polish: Enter-to-search, AI-styled search card, full (untruncated) top-match AI text |
+| ✅ | T14 | F2 | `sessionStorage` persistence of query/filters/results across navigation |
+| ⬜ | T15 | F2 | Fix relevance-cutoff false negative on short/category queries (e.g. "speaker") via category/brand keyword bypass; document a manual test-scenario checklist |
 
 ---
 
@@ -42,6 +45,9 @@
 | IVFFlat recall / probes | `SET LOCAL ivfflat.probes = 100` (= index `lists`) per query | The IVFFlat index is approximate and **not filter-aware**: with the default `probes=1` it scans ~1% of vectors then applies the price/brand `WHERE`, so selective filters returned 0 rows even when many products matched (verified: `maxPrice=100` → 0 of 170). Probes = `lists` gives exact recall; still <20ms at ~700 products. Equivalent to a filter-first exact scan at this scale. **Revisit if the catalog grows large or the index is rebuilt with a different `lists`** — the constant is tied to the current `lists=100`. |
 | Query-time filter extraction (Option B) | Deferred; when added, pre-fills the UI controls | A lower-friction text-only path (LLM parses budget/brand from the query). Kept out of v1 for reliability. When built, it populates the same hard filters (which stay the source of truth), so nothing here is thrown away. |
 | Results presentation | v1: product cards + AI text on the top match only (A+B) | Ranked cards are the core recommendation. The #1 result additionally surfaces the product's *existing* scraper-written `ai_description` (+ `ai_deal_description` when in-stock) — an "AI recommendation" feel with zero query-time LLM cost and no hallucination risk (text is pre-vetted per product). AI text on top match only, to keep the grid clean. Cross-product LLM synthesis is Phase 2 (see below). |
+| Search bar UX | Enter submits, Shift+Enter for newline; single-card visual style with a Sparkles/AI icon | Textarea default (plain Enter = newline) fights expected search-box behavior. The original plain textarea + separate button read as bland — a single bordered card with an AI icon reads as a distinct, AI-flavored search entry point rather than a generic form field. |
+| Top-match AI text length | Full text, no truncation | User preference: show the complete `ai_description` / `ai_deal_description` even though they're written for the product page and can run long, rather than a clamped/shortened version. Image is top-aligned (not vertically centered) to accommodate variable-height text. |
+| Search result persistence | `sessionStorage`, not `localStorage` or server state | Clicking a result and returning to the homepage should not lose the search. Session-scoped (cleared on tab/browser close) is the right lifetime — this is a "don't lose my place" convenience, not a durable saved-search feature. |
 | Semantic search abuse protection | OpenAI monthly usage cap (backstop) + per-IP rate limit + existing input caps | Public unauthenticated endpoint calling a paid API. Embedding cost is tiny (~$0.80 / 100k searches) but a scripted flood needs a hard stop. Monthly cap set in OpenAI dashboard (spend guarantee); per-IP rate limit (T12) short-circuits before the OpenAI call; T8's 3–500 char input caps bound per-call tokens. Optional query caching to skip duplicate embeds. |
 | FTS header search | Kept as-is | Semantic search is a separate homepage experience |
 | ai_description null handling | Silent hide | |
@@ -284,12 +290,13 @@ export async function searchSemantic(
 New client component (`"use client"`).
 
 **Input:**
-- `<textarea>` (not `<input>`) — allows multi-line natural language queries
+- `<textarea>` (not `<input>`) — allows multi-line natural language queries, wrapped in a single card with a Sparkles icon (visual AI cue), matching styling to feel distinct from the plain header `SearchInput`
+- **Enter submits the search; Shift+Enter inserts a newline** — matches expected search-box behavior rather than the textarea's plain-Enter-is-newline default
 - Placeholder: `"Beschrijf wat voor product je zoekt en welke functies belangrijk zijn. Bijv: 'draadloze koptelefoon voor sport met goede pasvorm'"` — no price/brand phrasing in the example, since those are now explicit controls, not parsed from the text
-- Filter controls (below or beside the textarea):
+- Filter controls — collapsed by default behind a "Filters" toggle (keeps the search inviting; most searches won't need them):
   - **Price** — min/max numeric inputs (reuse the T30 price-filter UI/pattern)
-  - **Brand** — multi-select, default "Alle merken" (no filter); options from `getSearchBrands()` (T11)
-- Submit button: "Zoek met AI"
+  - **Brand** — multi-select **dropdown** (not a pill wall — ~37 brands is too many for `BrandFilter`'s always-visible pills), default "Alle merken" (no filter); options from `getSearchBrands()` (T11); new `components/BrandMultiSelect.tsx`
+- Submit button: "Zoek met AI" with a Sparkles icon
 - Filters are passed to `searchSemantic(query, filters)` on submit (not applied live)
 
 **States:**
@@ -304,11 +311,12 @@ New client component (`"use client"`).
 
 **Result cards:** same Tailwind card pattern as `CategoryProductGrid` product cards — image, name, brand, price, deal badge if applicable. Cards link to `/{category}/{slug}`. Show an **out-of-stock indicator** when `in_stock` is false (OOS products are ranked lower but still shown — see decisions log) — reuse whatever OOS treatment the category grid already uses.
 
-**Top match (result #1) — AI text (A+B presentation):** the first result gets an expanded/highlighted treatment that surfaces the product's *existing* scraper-written AI copy — no query-time LLM call:
-- `ai_description` — shown as the "why this fits" blurb (reuse the T3 "Over dit product" card styling / truncation)
-- `ai_deal_description` — shown **only when `in_stock` is true and non-empty**, reusing the T2 blue "Prijs inzicht" insight card (Lightbulb + "AI" pill)
-- If both are null/empty, the top match renders as a normal card (silent hide)
-- AI text is shown on the **top match only** — not on every card (keeps the grid clean)
+**Top match (result #1) — featured banner (A+B presentation):** the first result is rendered as a full-width horizontal banner above the results grid (image left, top-aligned; brand/name/price + AI text right; `border: 2px solid border-accent`, "Beste match" badge). It surfaces the product's *existing* scraper-written AI copy — no query-time LLM call:
+- `ai_description` — "why this fits" blurb, shown **in full** (no truncation/line-clamp — user preference: prefers the complete text over a shortened version, even though it's written for the product page and can run long)
+- `ai_deal_description` — shown **in full**, **only when `in_stock` is true and non-empty**, in the T2 blue "Prijs inzicht" insight card (Lightbulb + "AI" pill)
+- If both are null/empty, the banner shows just image + name + price (no AI block)
+- AI text is shown on the **top-match banner only** — the remaining results are normal cards in the grid (keeps it clean)
+- (Phase 2 will still add purpose-written short snippets as an alternative/better-fitting copy — see Phase 2 — but v1 shows the full existing text rather than a clamped version.)
 
 ---
 
@@ -331,14 +339,68 @@ Beschrijf wat je zoekt en wij vinden de beste match
 
 ---
 
+### T13 — Search UX polish
+
+Post-launch refinements to T9, driven by direct usability feedback on the first working version.
+
+**File:** `components/SemanticSearch.tsx` (+ new `components/BrandMultiSelect.tsx`)
+
+1. **Enter-to-search.** A plain `<textarea>` treats Enter as a newline by default, which fights expected search-box behavior. `Enter` now submits the search; `Shift+Enter` inserts a newline.
+2. **AI-styled search card.** The original plain textarea + separate button read as bland/generic. Redesigned as a single bordered card containing the textarea, a Sparkles icon inline with the input, a collapsible "Filters" toggle, and a "Zoek met AI" button with a Sparkles icon — reads as a distinct AI-flavored entry point rather than a generic form.
+3. **Full (untruncated) top-match AI text.** T9 originally line-clamped `ai_description`/`ai_deal_description` in the "Beste match" banner (3/2 lines) since they're written long for the product page. User feedback: show the complete text, not a clamped version — clamping cut off mid-thought and felt incomplete. The banner image is top-aligned (not vertically centered) so the layout works with variable-height text. Phase 2's short-snippet copy (see Phase 2) remains the longer-term fix for banner-appropriate length; T13 keeps the existing long text but shows all of it.
+4. **Brand filter as a dropdown, not a pill wall.** T9 originally reused `BrandFilter`'s always-visible pill pattern; with ~37 brands on the homepage (vs. a handful per category) that's too many pills. New `components/BrandMultiSelect.tsx`: a compact "Alle merken" / "Merken (n)" button opening a checkbox list, click-outside-to-close.
+
+### T14 — Session persistence
+**Session persistence.** The last search (query text, filters, results) is saved to `sessionStorage` (key `semanticSearchState`) so it survives navigating to a product page and back to the homepage. Restored on mount; cleared automatically when the browser tab/session ends — deliberately `sessionStorage`, not `localStorage` or server state, since this is a "don't lose my place" convenience, not a durable saved-search feature.
+
+**Save is explicit, not reactive.** The persist call happens once, inside `runSearch()`, right after a search completes — using values computed locally in that function, not by watching component state via a second `useEffect`. This is a deliberate correction of an earlier bug: a reactive "watch all state and auto-save on change" effect also fires on the initial hydration render, *before* the restore effect's `setState` calls have been applied to a re-render — so it wrote the still-default empty state directly over the just-restored `sessionStorage` data, silently losing every session on the very next remount (reproduced: searching, clicking a product, and returning to the homepage showed no results, and `sessionStorage` had shrunk from ~9KB of real results to the ~100-byte empty default). Saving explicitly after a search completes makes that race structurally impossible — nothing ever writes to `sessionStorage` during mount/hydration. **Do not reintroduce a reactive auto-save effect for this state.**
+
+A search in progress (`status: "loading"`) is never persisted mid-request — restoring mid-request would show a spinner with no request in flight, so it's restored as `idle` instead if the tab is reloaded before a search completes.
+
+---
+
+### T15 — Fix relevance-cutoff false negative on short/category queries
+
+**Bug found in manual testing:** searching just `"speaker"` returns "Geen resultaten gevonden" even though the catalog has ~200 speakers. Root cause: `MAX_RELEVANCE_DISTANCE` (T7, `lib/semantic-search.ts`) was calibrated on rich, descriptive queries (dist ~0.35–0.45 for genuine matches). Short single-word category queries carry less semantic signal and land further out — `"speaker"` sits at dist 0.615, `"oordopjes"` at 0.568 — **both beyond the 0.55 cutoff despite being unambiguously on-topic**. Simply raising the global threshold doesn't work: the off-topic calibration query (`"koffiezetapparaat"`, dist 0.61–0.64) overlaps the same range as legitimate short queries, so no single global distance value cleanly separates "terse but valid" from "genuinely off-topic."
+
+**Fix — category/brand keyword bypass:** before applying `MAX_RELEVANCE_DISTANCE`, check whether the (lowercased) query contains a known category word or a catalog brand name. If it does, skip the distance filter entirely for this search — ranking still runs on cosine distance, only the *cutoff* is skipped. If it doesn't match a known term, the existing cutoff behavior (and honest empty state for genuinely off-topic queries) is unchanged.
+
+- **File:** `lib/semantic-search.ts`
+- New export `isLikelyOnTopicQuery(query: string, brands: string[]): boolean`:
+  - `CATEGORY_KEYWORDS` — small hardcoded list covering the 4 categories in Dutch + English + common singular/plural: `koptelefoon(s)`, `headphone(s)`, `oordopje(s)`, `oortjes`, `earbud(s)`, `earphone(s)`, `speaker(s)`, `luidspreker(s)`, `soundbar(s)`
+  - Brand check — case-insensitive substring match against the full catalog brand list (not just selected filter brands), via `getSearchBrands()` (T11)
+  - Match = whole-word for category keywords (avoid accidental substring hits); simple substring for brand names
+- `semanticSearch()` gains a `bypassRelevanceCutoff: boolean` param; SQL changes to `AND ($6::boolean OR (p.embedding <=> $1::vector) < 0.55)`
+- `app/actions/semantic-search.ts` (T8) computes the flag via `getSearchBrands()` + `isLikelyOnTopicQuery()` before calling `semanticSearch()`
+
+**Manual test-scenario checklist** (per this repo's testing convention — exercised via the live UI, not isolated DB-function tests):
+
+| # | Query | Filters | Expected |
+|---|---|---|---|
+| 1 | `"draadloze koptelefoon voor sport met goede pasvorm"` | none | Results, relevant sport-focused earbuds/headphones as top match |
+| 2 | `"speaker"` | none | **Results** (bug case — must no longer be empty) |
+| 3 | `"oordopjes"` | none | Results |
+| 4 | `"koffiezetapparaat met melkopschuimer"` | none | "Geen resultaten gevonden" (genuinely off-topic, must stay empty) |
+| 5 | `"asdfqwer zxcv"` | none | "Geen resultaten gevonden" (gibberish) |
+| 6 | `"speaker met koffiezetapparaat"` | none | **Known bypass edge case** — contains the category keyword `"speaker"`, so the cutoff is skipped for the whole query (see T15 design). Expect **results shown** (speakers, ranked by whatever the embedding finds closest — likely dominated by "speaker"), not an empty state. This is accepted behavior of the keyword-bypass approach, not a bug: a mixed query with *any* valid category/brand term is treated as on-topic. Verify results still look like speakers, not random noise. |
+| 7 | `"koptelefoon"` | `maxPrice: 100` | Results ≤ €100 only (regression check for the T7 IVFFlat recall fix) |
+| 8 | `"koptelefoon"` | `brands: ["Sony"]` | Results, all brand = Sony |
+| 9 | any valid query | `minPrice: 50, maxPrice: 150, brands: [two brands]` | Results respecting both filters simultaneously |
+| 10 | valid query returning a currently out-of-stock top match | none | Result still shown, ranked appropriately, with OOS indicator (not hidden) |
+| 11 | `""` / `"ab"` (< 3 chars) | none | Client/server validation error, no OpenAI call made |
+| 12 | 501+ character query | none | Server validation error ("Zoekopdracht is te lang"), no OpenAI call made |
+
+---
+
 ## Implementation order
 
 **F1** (no prerequisites):
 - T1 → T2 → T3
 
 **F2** (T4 DB steps can start immediately; T6–T11 require T4 + T5; end-to-end testing requires scraper to have run):
-- T4 (manual DB) → T5 → T6 → T7 → T11 → T8 → T9 → T10
+- T4 (manual DB) → T5 → T6 → T7 → T11 → T8 → T9 → T10 → T13 → T14 → T15 → T12
 - T11 can be built any time after T5 (no embedding dependency); slotted before T9 since T9's brand dropdown consumes it
+- T13/T14 follow T9/T10 (UX polish + persistence on the shipped component, driven by hands-on feedback); T15 fixes a bug found during that same hands-on testing; T12 (rate limiting) stays last — required before any public deploy, but not blocking earlier dev/testing
 
 ---
 
@@ -351,6 +413,7 @@ Deliberate fast-follows once v1 (A+B) ships and rate limiting (T12) is live:
   - Gate behind T12 rate limiting + the OpenAI monthly cap before enabling.
   - Ground strictly on the returned rows only (name/brand/price/specs/`ai_description`); forbid inventing specs or prices; cite prices from the data to avoid hallucination.
 - **B (Option B filter extraction) — LLM parses budget/brand from the query text** and pre-fills the T9 UI controls (which remain the source of truth). See decisions log.
+- **Concise search-result AI copy.** The top-match banner currently reuses the product page's `ai_description` / `ai_deal_description`, which are written long for that page. In v1 they are visually truncated (line-clamp). Phase 2: generate short, search-oriented snippets (~1 sentence "why it fits" + ~1 sentence price insight) — either a dedicated scraper field or trimmed at query time — so the banner shows purpose-built short copy instead of a clamped long description.
 
 ## Out of scope
 
