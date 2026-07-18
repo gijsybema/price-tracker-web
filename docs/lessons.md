@@ -165,3 +165,12 @@
 - **Temporarily lowering a threshold made live verification fast and cheap.** Testing the rate limiter at a limit of 3 instead of 20 turned a 21-request verification into a 4-request one — same code path, same confidence, far less real API usage. Worth doing for any threshold/limit feature.
 
 ---
+
+## Task: T15/T16 — Relevance-cutoff keyword bypass + least-privilege DB role
+
+- **Rotating/swapping a shared credential needs a "who else uses this?" check before it's actually done.** Swapping `DATABASE_URL` to `scraper_readonly` was a clean win for this app, but the old full-access credential is also used by `product_scraper` — something only surfaced when Vercel flagged the old value for rotation. Ask about other consumers before declaring a credential change complete, not after.
+- **A Vercel env var change isn't live until a redeploy happens — this bit us twice.** `DATABASE_URL` (T16) and `OPENAI_API_KEY` both needed an explicit redeploy after being added/changed in the dashboard; the missing `OPENAI_API_KEY` redeploy is what caused "AI search stuck forever" in production. Mirrors the local-dev rule (restart `npm run dev` after `.env.local` changes) but for prod, and wasn't written down anywhere.
+- **An `await` on a Server Action with no `try/catch` on the client leaves the UI stuck in a loading state forever if the action itself throws** (vs. returning its own `{error}`). Silent — no console error visible to the user, no timeout — until diagnosed by reading the code. Worth checking other Server Action call sites for the same gap.
+- **Splitting manual QA between "verify the core regression case live, hand the rest of the checklist to the user" worked well** once browser automation started hitting friction (stale element refs after a layout shift). For a 12-row checklist, that division was faster and more reliable than fighting automation on every row.
+
+---
