@@ -25,7 +25,7 @@
 | ✅ | T13 | F2 | Search UX polish: Enter-to-search, AI-styled search card, full (untruncated) top-match AI text |
 | ✅ | T14 | F2 | `sessionStorage` persistence of query/filters/results across navigation |
 | ⬜ | T15 | F2 | Fix relevance-cutoff false negative on short/category queries (e.g. "speaker") via category/brand keyword bypass; document a manual test-scenario checklist |
-| ⬜ | T16 | F2 | Restrict `DATABASE_URL` to a least-privilege, read-only Postgres role for this app — no `CREATE`/`DROP`/`INSERT`/`UPDATE`/`DELETE` |
+| ✅ | T16 | F2 | Restrict `DATABASE_URL` to a least-privilege, read-only Postgres role for this app — no `CREATE`/`DROP`/`INSERT`/`UPDATE`/`DELETE` |
 
 ---
 
@@ -413,9 +413,11 @@ Sliding-window rate limit (`@upstash/ratelimit` + `@upstash/redis`), 20 requests
 
 **Fix:** provision a separate Postgres role for this app's `DATABASE_URL` that only has `SELECT` on the tables it actually queries (`products`, `price_history`, and whatever else `lib/*.ts` reads) — no `CREATE`, `DROP`, `INSERT`, `UPDATE`, or `DELETE` anywhere. This is a Railway/DB-side change (`CREATE ROLE ... ` + `GRANT SELECT ...` + `REVOKE` on everything else, or Railway's own role-scoping if it offers one), not an app-code change, and should be coordinated with whoever owns the schema in `product_scraper` (per [[project-scraper-path]]) so the scraper's own write access isn't accidentally affected.
 
+**Done:** user already had a `scraper_readonly` role provisioned in Railway. Swapped `DATABASE_URL` to it in both local `.env.local` and Vercel (Production). Verified with a throwaway script: `SELECT` on `products` succeeds, `INSERT` and `CREATE TABLE` both fail with `permission denied`. Confirmed end-to-end in the browser (local dev, restarted after the env change) that homepage, category pages, product detail, and semantic search all still work on the read-only role. Old full-access credential still used by `product_scraper` — rotating its password is a follow-up the user is handling in that project's own repo, since rotation requires updating the scraper's config too.
+
 - **Owner:** user (DB/infra change, not app code)
-- **Scope:** production Railway Postgres instance only — local dev DB is a separate, already-manual setup
-- **Blocking:** not blocking other F2 work, but should land before any public deploy, same as T12
+- **Scope:** production Railway Postgres instance + Vercel Production env; local dev DB is a separate, already-manual setup
+- **Blocking:** not blocking other F2 work, and did not block public deploy — done
 
 ---
 
