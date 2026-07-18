@@ -3,6 +3,7 @@
 ## Core Rules
 - In FULL mode: always plan before coding and wait for explicit approval before implementing
 - In NORMAL mode: plan is optional — if the task is clear, proceed directly to implementation; do not wait for approval between steps
+- In NORMAL mode, "proceed directly to implementation" does not cover architectural or infrastructure choices — new dependency vs. reusing existing/shared infra, where data is stored, credential/permission scope. Surface these as an explicit question before implementing, the same way threshold/state-transition decisions already require one short clarifying exchange
 - Work in small, clearly defined steps — never implement more than one task or slice at a time
 - Keep changes minimal and focused; do not modify unrelated files
 - Read the exact task description before implementing — do not infer fields or requirements from nearby context in the spec
@@ -22,7 +23,7 @@
 - Add comments only when they improve clarity
 - Before implementing any task involving a state change or status transition: map all consumers/readers of that state first, and surface threshold and policy questions (when does the transition trigger? how many times?) before writing any code — one short clarifying exchange is cheaper than a full rewrite
 - When a task involves side effects, do not start immediately after confirmation — pause and explicitly verify assumptions before proceeding
-- Never modify `docs/spec.md` without explicit user confirmation; always show proposed changes and wait for approval
+- Never modify spec files like `docs/spec.md` without explicit user confirmation; always show proposed changes and wait for approval
 - Do not mark tasks done in `docs/spec.md` during implementation; only mark them done at wrap-up or on explicit user confirmation
 - For tasks spanning multiple projects or files: read the source (e.g. SQL view, API response) before updating the consumer (e.g. TypeScript type) — never type against an assumed schema
 - Before building any display on top of a DB field, verify what it actually represents — field names are often misleading (e.g. `old_price` may be the last drop event, not the 30-day high). For JSONB fields, also verify stored value types with `SELECT DISTINCT` before writing type-conversion logic.

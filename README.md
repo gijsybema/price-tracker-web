@@ -52,6 +52,17 @@ Either way, the variable must be set in the **same terminal session**, **before*
 
 This is a local-dev-only workaround — production deployments (Vercel, Railway, etc.) don't sit behind Norton and are unaffected.
 
+### Search rate limiting (`KV_REST_API_URL`, `KV_REST_API_TOKEN`)
+
+The semantic search Server Action is rate-limited per IP (20 requests / 10 minutes) using Redis, provisioned via the Vercel dashboard (Storage tab → Browse Marketplace → add a Redis/Upstash integration → connect it to this project). Vercel auto-injects the env vars into deployed environments; for local dev, pull them with `vercel env pull .env.local` (requires the Vercel CLI linked to this project) or copy the two values from the dashboard into `.env.local`:
+
+```bash
+KV_REST_API_URL=https://...
+KV_REST_API_TOKEN=...
+```
+
+If these aren't set, rate limiting **fails open** (search still works, just unlimited) — so local dev works without them, but they're required before a public deploy.
+
 ## Getting Started
 
 First, run the development server:

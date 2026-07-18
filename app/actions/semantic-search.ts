@@ -1,14 +1,22 @@
 "use server";
 
+import { headers } from "next/headers";
 import { generateEmbedding } from "../../lib/embeddings";
 import { semanticSearch, type SemanticSearchFilters } from "../../lib/semantic-search";
+import { checkRateLimit } from "../../lib/rate-limit";
 import type { SearchResult } from "../../lib/search";
 
 const MIN_QUERY_LENGTH = 3;
 const MAX_QUERY_LENGTH = 500;
 
+async function getClientIp(): Promise<string | null> {
+  const h = await headers();
+  const forwardedFor = h.get("x-forwarded-for");
+  if (forwardedFor) return forwardedFor.split(",")[0].trim();
+  return h.get("x-real-ip");
+}
+
 // Server Action: embeds the user query and runs the pgvector search.
-// NOTE: not yet rate-limited — see T12. Do not deploy publicly before then.
 export async function searchSemantic(
   query: string,
   filters?: SemanticSearchFilters
@@ -20,6 +28,14 @@ export async function searchSemantic(
   }
   if (trimmed.length > MAX_QUERY_LENGTH) {
     return { results: [], error: "Zoekopdracht is te lang." };
+  }
+
+  const ip = await getClientIp();
+  if (ip) {
+    const allowed = await checkRateLimit(ip);
+    if (!allowed) {
+      return { results: [], error: "Te veel zoekopdrachten. Probeer het over een paar minuten opnieuw." };
+    }
   }
 
   const cleanFilters = sanitizeFilters(filters);

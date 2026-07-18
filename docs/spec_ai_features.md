@@ -21,10 +21,11 @@
 | ✅ | T9 | F2 | Create `components/SemanticSearch.tsx` — textarea + price/brand filters, loading state, result cards (OOS indicator; top match shows existing AI text) |
 | ✅ | T10 | F2 | Wire `SemanticSearch` into `app/page.tsx` below hero, above top deals |
 | ✅ | T11 | F2 | Add `getSearchBrands()` — distinct active-product brands for the brand filter dropdown |
-| ⬜ | T12 | F2 | Add per-IP rate limiting to the `searchSemantic` Server Action (T8) — short-circuit before the OpenAI call |
+| ✅ | T12 | F2 | Add per-IP rate limiting to the `searchSemantic` Server Action (T8) — short-circuit before the OpenAI call |
 | ✅ | T13 | F2 | Search UX polish: Enter-to-search, AI-styled search card, full (untruncated) top-match AI text |
 | ✅ | T14 | F2 | `sessionStorage` persistence of query/filters/results across navigation |
 | ⬜ | T15 | F2 | Fix relevance-cutoff false negative on short/category queries (e.g. "speaker") via category/brand keyword bypass; document a manual test-scenario checklist |
+| ⬜ | T16 | F2 | Restrict `DATABASE_URL` to a least-privilege, read-only Postgres role for this app — no `CREATE`/`DROP`/`INSERT`/`UPDATE`/`DELETE` |
 
 ---
 
@@ -49,6 +50,8 @@
 | Top-match AI text length | Full text, no truncation | User preference: show the complete `ai_description` / `ai_deal_description` even though they're written for the product page and can run long, rather than a clamped/shortened version. Image is top-aligned (not vertically centered) to accommodate variable-height text. |
 | Search result persistence | `sessionStorage`, not `localStorage` or server state | Clicking a result and returning to the homepage should not lose the search. Session-scoped (cleared on tab/browser close) is the right lifetime — this is a "don't lose my place" convenience, not a durable saved-search feature. |
 | Semantic search abuse protection | OpenAI monthly usage cap (backstop) + per-IP rate limit + existing input caps | Public unauthenticated endpoint calling a paid API. Embedding cost is tiny (~$0.80 / 100k searches) but a scripted flood needs a hard stop. Monthly cap set in OpenAI dashboard (spend guarantee); per-IP rate limit (T12) short-circuits before the OpenAI call; T8's 3–500 char input caps bound per-call tokens. Optional query caching to skip duplicate embeds. |
+| Rate-limit storage (T12) | Separate store (Redis via Vercel Marketplace/Upstash), not Postgres | `DATABASE_URL` is meant to be scraper/product data only — schema and migrations for it live in the `product_scraper` repo. Rate-limit counters are unrelated, high-write-frequency, app-operational bookkeeping and should not live in the production product DB. |
+| DB credential scope (T16) | `DATABASE_URL` currently grants full DDL/write access, not just `SELECT` | Discovered while building T12: an ad-hoc `CREATE TABLE`/`DROP TABLE` against the production DB succeeded from this (frontend-only, read-should-be-enough) app without any permission error. Nothing technical currently stops this app's code from writing to or altering the production schema. Flagged as T16 — needs a least-privilege role, provisioned/coordinated on the Railway side (and with the `product_scraper` repo, which owns the schema). |
 | FTS header search | Kept as-is | Semantic search is a separate homepage experience |
 | ai_description null handling | Silent hide | |
 | ai_deal_description null handling | Show whenever non-null, regardless of deal badge threshold | Scraper writes it on every price change, not only at deal thresholds |
@@ -392,15 +395,39 @@ A search in progress (`status: "loading"`) is never persisted mid-request — re
 
 ---
 
+### T12 — Per-IP rate limiting
+
+**File:** `lib/rate-limit.ts`, wired into `app/actions/semantic-search.ts`
+
+Sliding-window rate limit (`@upstash/ratelimit` + `@upstash/redis`), 20 requests / 10 minutes per IP, backed by Redis provisioned via the Vercel Marketplace (not the product Postgres DB — see the T16 decision). Client IP read from `x-forwarded-for` / `x-real-ip` in the Server Action.
+
+**Fails open** if Redis is unconfigured (env vars missing, e.g. local dev without setup) or unreachable (network/TLS error) — a rate-limit outage degrades to "unlimited," not "search broken." Over-limit requests short-circuit before the OpenAI call and return the existing error-message UI path: "Te veel zoekopdrachten. Probeer het over een paar minuten opnieuw."
+
+**Verified live:** temporarily lowered to 3 requests / 10 min, ran 4 real searches through the UI — first 3 returned real results, the 4th showed the rate-limit message. Reverted to 20 after confirming.
+
+---
+
+### T16 — Restrict `DATABASE_URL` to a least-privilege read-only role
+
+**Found while implementing T12:** the app's `DATABASE_URL` connection string authenticates as a role with full DDL and write privileges on the production database — an ad-hoc `CREATE TABLE search_rate_limits ...` and later `DROP TABLE search_rate_limits` both succeeded from this app's code with no permission error, even though the app only ever reads product/price data (it never writes). The credential's scope, not the app's code, is the only thing that made that possible.
+
+**Fix:** provision a separate Postgres role for this app's `DATABASE_URL` that only has `SELECT` on the tables it actually queries (`products`, `price_history`, and whatever else `lib/*.ts` reads) — no `CREATE`, `DROP`, `INSERT`, `UPDATE`, or `DELETE` anywhere. This is a Railway/DB-side change (`CREATE ROLE ... ` + `GRANT SELECT ...` + `REVOKE` on everything else, or Railway's own role-scoping if it offers one), not an app-code change, and should be coordinated with whoever owns the schema in `product_scraper` (per [[project-scraper-path]]) so the scraper's own write access isn't accidentally affected.
+
+- **Owner:** user (DB/infra change, not app code)
+- **Scope:** production Railway Postgres instance only — local dev DB is a separate, already-manual setup
+- **Blocking:** not blocking other F2 work, but should land before any public deploy, same as T12
+
+---
+
 ## Implementation order
 
 **F1** (no prerequisites):
 - T1 → T2 → T3
 
 **F2** (T4 DB steps can start immediately; T6–T11 require T4 + T5; end-to-end testing requires scraper to have run):
-- T4 (manual DB) → T5 → T6 → T7 → T11 → T8 → T9 → T10 → T13 → T14 → T15 → T12
+- T4 (manual DB) → T5 → T6 → T7 → T11 → T8 → T9 → T10 → T13 → T14 → T15 → T12 → T16
 - T11 can be built any time after T5 (no embedding dependency); slotted before T9 since T9's brand dropdown consumes it
-- T13/T14 follow T9/T10 (UX polish + persistence on the shipped component, driven by hands-on feedback); T15 fixes a bug found during that same hands-on testing; T12 (rate limiting) stays last — required before any public deploy, but not blocking earlier dev/testing
+- T13/T14 follow T9/T10 (UX polish + persistence on the shipped component, driven by hands-on feedback); T15 fixes a bug found during that same hands-on testing; T12 (rate limiting) and T16 (DB credential scoping) stay last — required before any public deploy, but not blocking earlier dev/testing. T16 is user-owned infra work, independent of T12's implementation.
 
 ---
 

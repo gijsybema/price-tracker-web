@@ -156,3 +156,12 @@
 - **Screenshot/zoom capture can silently fail mid-session while the app underneath is fine.** When visual tools time out, DOM inspection via `javascript_tool` (measuring `scrollHeight`/`clientHeight`, computed styles) is a reliable fallback for verifying layout facts without a picture.
 
 ---
+
+## Task: T12 — Semantic search rate limiting
+
+- **"Avoid new dependencies" is not license to repurpose shared infrastructure for something it wasn't designed for.** Choosing to store rate-limit counters in the production Postgres DB (to avoid adding Redis as a dependency) put unrelated, high-write-frequency app-operational data into a database meant purely for scraped product data — and the app turned out to have full DDL/write access to it, so nothing technical stopped that. Architectural/infra tradeoffs need explicit confirmation even in NORMAL mode; "no new dependency" is a default, not a rule that overrides asking.
+- **A working credential can be silently over-scoped, and only shows up when you push on it.** `DATABASE_URL` granting `CREATE`/`DROP` to a "read-only frontend" app was invisible until an ad-hoc table creation just succeeded. Worth asking "what can this connection string actually do?" for shared/production credentials, not assuming least privilege.
+- **A permanent env var (`setx`) only applies to processes launched after the change — not to new tabs in an already-open terminal app.** Restarting `npm run dev` in a "new terminal" that was really a new tab in an already-running terminal application didn't pick up the updated `NODE_EXTRA_CA_CERTS`; the terminal application itself needed a full relaunch. When a "set it permanently" fix doesn't take effect, check whether the parent process needs restarting, not just the shell command.
+- **Temporarily lowering a threshold made live verification fast and cheap.** Testing the rate limiter at a limit of 3 instead of 20 turned a 21-request verification into a 4-request one — same code path, same confidence, far less real API usage. Worth doing for any threshold/limit feature.
+
+---
