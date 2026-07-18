@@ -220,11 +220,17 @@ export default function SemanticSearch({ brands }: Props) {
     const min = minPrice !== "" && !isNaN(Number(minPrice)) ? Number(minPrice) : null;
     const max = maxPrice !== "" && !isNaN(Number(maxPrice)) ? Number(maxPrice) : null;
 
-    const res = await searchSemantic(query, {
-      minPrice: min,
-      maxPrice: max,
-      brands: [...selectedBrands],
-    });
+    let res: { results: SearchResult[]; error?: string };
+    try {
+      res = await searchSemantic(query, {
+        minPrice: min,
+        maxPrice: max,
+        brands: [...selectedBrands],
+      });
+    } catch (err) {
+      console.error("searchSemantic threw:", err);
+      res = { results: [], error: "Er is iets misgegaan, probeer het opnieuw." };
+    }
 
     const finalResults = res.error ? [] : res.results;
     const finalError = res.error ?? null;
