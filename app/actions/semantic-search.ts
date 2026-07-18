@@ -2,9 +2,9 @@
 
 import { headers } from "next/headers";
 import { generateEmbedding } from "../../lib/embeddings";
-import { semanticSearch, type SemanticSearchFilters } from "../../lib/semantic-search";
+import { semanticSearch, isLikelyOnTopicQuery, type SemanticSearchFilters } from "../../lib/semantic-search";
 import { checkRateLimit } from "../../lib/rate-limit";
-import type { SearchResult } from "../../lib/search";
+import { getSearchBrands, type SearchResult } from "../../lib/search";
 
 const MIN_QUERY_LENGTH = 3;
 const MAX_QUERY_LENGTH = 500;
@@ -41,8 +41,10 @@ export async function searchSemantic(
   const cleanFilters = sanitizeFilters(filters);
 
   try {
+    const catalogBrands = await getSearchBrands();
+    const bypassRelevanceCutoff = isLikelyOnTopicQuery(trimmed, catalogBrands);
     const embedding = await generateEmbedding(trimmed);
-    const results = await semanticSearch(embedding, cleanFilters, 10);
+    const results = await semanticSearch(embedding, cleanFilters, 10, bypassRelevanceCutoff);
     return { results };
   } catch (error) {
     console.error("Error in searchSemantic:", error);

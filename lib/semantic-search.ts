@@ -23,14 +23,44 @@ const IVFFLAT_PROBES = 100;
 // instead of unrelated products. Tune if results feel too strict/loose.
 const MAX_RELEVANCE_DISTANCE = 0.55;
 
+// Short single-word category queries (e.g. "speaker", dist 0.615) carry less
+// semantic signal than descriptive queries and land beyond MAX_RELEVANCE_DISTANCE
+// despite being unambiguously on-topic. Raising the global threshold isn't safe —
+// off-topic queries (e.g. "koffiezetapparaat", dist 0.61-0.64) overlap the same
+// range. Instead, a known category/brand keyword bypasses the cutoff entirely
+// for that query (T15) — ranking still runs on cosine distance either way.
+const CATEGORY_KEYWORDS = [
+  "koptelefoon", "koptelefoons", "headphone", "headphones",
+  "oordopje", "oordopjes", "oortjes", "earbud", "earbuds", "earphone", "earphones",
+  "speaker", "speakers", "luidspreker", "luidsprekers",
+  "soundbar", "soundbars",
+];
+
+// Whole-word match against CATEGORY_KEYWORDS, or a substring match against any
+// catalog brand name. Case-insensitive. Used to decide whether a query is
+// "terse but valid" and should skip the relevance cutoff.
+export function isLikelyOnTopicQuery(query: string, brands: string[]): boolean {
+  const lower = query.toLowerCase();
+
+  const hasCategoryWord = CATEGORY_KEYWORDS.some((word) =>
+    new RegExp(`\\b${word}\\b`).test(lower)
+  );
+  if (hasCategoryWord) return true;
+
+  return brands.some((brand) => lower.includes(brand.toLowerCase()));
+}
+
 // Runs a pgvector cosine-similarity search. Price/brand are hard filters;
 // out-of-stock products are pushed below in-stock ones (still shown, ranked
-// lower); results beyond MAX_RELEVANCE_DISTANCE are dropped. Vectors are passed
-// as a formatted string with a ::vector cast — no pgvector npm package needed.
+// lower); results beyond MAX_RELEVANCE_DISTANCE are dropped, unless
+// bypassRelevanceCutoff is set (T15 — known on-topic short query). Vectors are
+// passed as a formatted string with a ::vector cast — no pgvector npm package
+// needed.
 export async function semanticSearch(
   embedding: number[],
   filters: SemanticSearchFilters = {},
-  limit = 10
+  limit = 10,
+  bypassRelevanceCutoff = false
 ): Promise<SearchResult[]> {
   const { minPrice, maxPrice, brands } = filters;
   const vector = `[${embedding.join(",")}]`;
@@ -78,7 +108,7 @@ export async function semanticSearch(
       ) p30 ON true
       WHERE p.active = true
         AND p.embedding IS NOT NULL
-        AND (p.embedding <=> $1::vector) < ${MAX_RELEVANCE_DISTANCE}
+        AND ($6::boolean OR (p.embedding <=> $1::vector) < ${MAX_RELEVANCE_DISTANCE})
         AND ($2::numeric IS NULL OR ph.price >= $2)
         AND ($3::numeric IS NULL OR ph.price <= $3)
         AND ($4::text[] IS NULL OR p.brand = ANY($4))
@@ -88,7 +118,7 @@ export async function semanticSearch(
         drop_percentage DESC NULLS LAST
       LIMIT $5
       `,
-      [vector, minPrice ?? null, maxPrice ?? null, brandFilter, limit]
+      [vector, minPrice ?? null, maxPrice ?? null, brandFilter, limit, bypassRelevanceCutoff]
     );
     await client.query("COMMIT");
     return result.rows;

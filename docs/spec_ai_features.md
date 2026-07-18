@@ -24,7 +24,7 @@
 | ✅ | T12 | F2 | Add per-IP rate limiting to the `searchSemantic` Server Action (T8) — short-circuit before the OpenAI call |
 | ✅ | T13 | F2 | Search UX polish: Enter-to-search, AI-styled search card, full (untruncated) top-match AI text |
 | ✅ | T14 | F2 | `sessionStorage` persistence of query/filters/results across navigation |
-| ⬜ | T15 | F2 | Fix relevance-cutoff false negative on short/category queries (e.g. "speaker") via category/brand keyword bypass; document a manual test-scenario checklist |
+| ✅ | T15 | F2 | Fix relevance-cutoff false negative on short/category queries (e.g. "speaker") via category/brand keyword bypass; document a manual test-scenario checklist |
 | ✅ | T16 | F2 | Restrict `DATABASE_URL` to a least-privilege, read-only Postgres role for this app — no `CREATE`/`DROP`/`INSERT`/`UPDATE`/`DELETE` |
 
 ---
@@ -380,18 +380,18 @@ A search in progress (`status: "loading"`) is never persisted mid-request — re
 
 | # | Query | Filters | Expected |
 |---|---|---|---|
-| 1 | `"draadloze koptelefoon voor sport met goede pasvorm"` | none | Results, relevant sport-focused earbuds/headphones as top match |
-| 2 | `"speaker"` | none | **Results** (bug case — must no longer be empty) |
-| 3 | `"oordopjes"` | none | Results |
-| 4 | `"koffiezetapparaat met melkopschuimer"` | none | "Geen resultaten gevonden" (genuinely off-topic, must stay empty) |
-| 5 | `"asdfqwer zxcv"` | none | "Geen resultaten gevonden" (gibberish) |
-| 6 | `"speaker met koffiezetapparaat"` | none | **Known bypass edge case** — contains the category keyword `"speaker"`, so the cutoff is skipped for the whole query (see T15 design). Expect **results shown** (speakers, ranked by whatever the embedding finds closest — likely dominated by "speaker"), not an empty state. This is accepted behavior of the keyword-bypass approach, not a bug: a mixed query with *any* valid category/brand term is treated as on-topic. Verify results still look like speakers, not random noise. |
-| 7 | `"koptelefoon"` | `maxPrice: 100` | Results ≤ €100 only (regression check for the T7 IVFFlat recall fix) |
-| 8 | `"koptelefoon"` | `brands: ["Sony"]` | Results, all brand = Sony |
-| 9 | any valid query | `minPrice: 50, maxPrice: 150, brands: [two brands]` | Results respecting both filters simultaneously |
-| 10 | valid query returning a currently out-of-stock top match | none | Result still shown, ranked appropriately, with OOS indicator (not hidden) |
-| 11 | `""` / `"ab"` (< 3 chars) | none | Client/server validation error, no OpenAI call made |
-| 12 | 501+ character query | none | Server validation error ("Zoekopdracht is te lang"), no OpenAI call made |
+| 1 ✅ | `"draadloze koptelefoon voor sport met goede pasvorm"` | none | Results, relevant sport-focused earbuds/headphones as top match. **Verified live: returns earbuds only (no headphones) — within expected, since earbuds are a valid sport-focused match.** |
+| 2 ✅ | `"speaker"` | none | **Results** (bug case — must no longer be empty). **Verified live: returns 10 results.** |
+| 3 ✅ | `"oordopjes"` | none | Results. **Verified live: returns 10 results.** |
+| 4 ✅ | `"koffiezetapparaat met melkopschuimer"` | none | "Geen resultaten gevonden" (genuinely off-topic, must stay empty). **Verified live: still empty.** |
+| 5 ✅ | `"asdfqwer zxcv"` | none | "Geen resultaten gevonden" (gibberish). **Verified live: empty, as expected.** |
+| 6 ✅ | `"speaker met koffiezetapparaat"` | none | **Known bypass edge case** — contains the category keyword `"speaker"`, so the cutoff is skipped for the whole query (see T15 design). Expect **results shown** (speakers, ranked by whatever the embedding finds closest — likely dominated by "speaker"), not an empty state. This is accepted behavior of the keyword-bypass approach, not a bug: a mixed query with *any* valid category/brand term is treated as on-topic. Verify results still look like speakers, not random noise. **Verified live: returns 10 results.** Mixed/multi-intent queries like this are a candidate for real disambiguation once Phase 2's LLM query-parsing lands — noted as a forward-looking idea, not a T15 defect. |
+| 7 ✅ | `"koptelefoon"` | `maxPrice: 100` | Results ≤ €100 only (regression check for the T7 IVFFlat recall fix). **Verified live: returns headphones within the price cap, as expected.** |
+| 8 ✅ | `"koptelefoon"` | `brands: ["Sony"]` | Results, all brand = Sony. **Verified live: returns Sony headphones only, as expected.** |
+| 9 ✅ | any valid query | `minPrice: 50, maxPrice: 150, brands: [two brands]` | Results respecting both filters simultaneously. **Verified live: returns valid results respecting all filters.** |
+| 10 | valid query returning a currently out-of-stock top match | none | Result still shown, ranked appropriately, with OOS indicator (not hidden). **Not tested — no current catalog scenario where an OOS product ranks as the top match; leave open for future manual testing when such a case arises.** |
+| 11 ✅ | `""` / `"ab"` (< 3 chars) | none | Client/server validation error, no OpenAI call made. **Verified live: shows "Typ minimaal 3 tekens om te zoeken.", as expected.** |
+| 12 ✅ | 501+ character query | none | Server validation error ("Zoekopdracht is te lang"), no OpenAI call made. **Verified live: shows expected error, as expected.** |
 
 ---
 
