@@ -6,6 +6,8 @@ declare global {
   }
 }
 
+import Link from "next/link";
+import { ExternalLink } from "lucide-react";
 import type { Deal } from "../lib/deals";
 
 function formatDateNL(dateString: string) {
@@ -20,21 +22,13 @@ function formatDateNL(dateString: string) {
 
 export default function DealCard({ deal }: { deal: Deal }) {
   const isBigSaving = Number(deal.price_diff) >= 75;
+  const pct = Number(deal.price_drop_pct).toLocaleString("nl-NL", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 
   return (
-    <a
-      href={deal.product_url}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={() => {
-        window.gtag?.("event", "click_deal", {
-          product_name: deal.name,
-          price: deal.current_price,
-          deal_id: deal.id,
-        });
-      }}
-      className="group flex h-full flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-    >
+    <div className="flex h-full flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
       {/* Bovenste deel */}
       <div className="flex items-start gap-4">
         {/* Image linksboven */}
@@ -49,23 +43,15 @@ export default function DealCard({ deal }: { deal: Deal }) {
           </div>
         )}
 
-        {/* Rechtsboven: badge + percentage + naam */}
+        {/* Rechtsboven: naam */}
         <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              {isBigSaving && (
-                <p className="text-xs font-medium uppercase tracking-wide text-orange-600">
-                  🔥 Grote besparing
-                </p>
-              )}
-            </div>
+          {isBigSaving && (
+            <p className="text-xs font-medium uppercase tracking-wide text-orange-600">
+              🔥 Grote besparing
+            </p>
+          )}
 
-            <span className="shrink-0 rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">
-              -{Number(deal.price_drop_pct).toLocaleString("nl-NL", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%
-            </span>
-          </div>
-
-          <h2 className="mt-2 text-lg font-semibold leading-snug text-gray-900 transition group-hover:text-black">
+          <h2 className="mt-2 text-lg font-semibold leading-snug text-gray-900">
             {deal.name}
           </h2>
         </div>
@@ -73,17 +59,7 @@ export default function DealCard({ deal }: { deal: Deal }) {
 
       {/* Onderste deel: altijd onderaan */}
       <div className="mt-auto pt-6">
-        <div className="rounded-xl bg-blue-50 p-4">
-          <p className="text-md font-bold text-blue-700">Bespaar</p>
-          <p className="mt-1 text-3xl font-bold text-blue-700">
-            €{Number(deal.price_diff).toFixed(0)}
-          </p>
-          <p className="mt-2 text-sm text-blue-700">
-            ten opzichte van de hoogste prijs in de afgelopen 30 dagen
-          </p>
-        </div>
-
-        <div className="mt-6 flex items-end gap-3">
+        <div className="flex items-end gap-3">
           <span className="text-2xl font-bold text-gray-900">
             €{Number(deal.current_price).toFixed(0)}
           </span>
@@ -92,15 +68,46 @@ export default function DealCard({ deal }: { deal: Deal }) {
           </span>
         </div>
 
+        <span className="mt-3 inline-block rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">
+          Bespaar €{Number(deal.price_diff).toFixed(0)} ({pct}% korting)
+        </span>
+
+        <p className="mt-2 text-xs text-gray-400">
+          t.o.v. hoogste prijs afgelopen 30 dagen
+        </p>
+
         <p className="mt-3 text-sm text-gray-500">
           Prijs op dit niveau sinds {formatDateNL(deal.price_level_since)}
         </p>
 
-        <div className="mt-6 inline-flex items-center text-sm font-medium text-black">
-          Bekijk product op Coolblue
-          <span className="ml-1 transition group-hover:translate-x-1">→</span>
+        <div className="mt-6 flex flex-col gap-2">
+          <a
+            href={deal.product_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => {
+              window.gtag?.("event", "click_deal", {
+                product_name: deal.name,
+                price: deal.current_price,
+                deal_id: deal.id,
+              });
+            }}
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+          >
+            Bekijk bij Coolblue
+            <ExternalLink className="h-4 w-4" aria-hidden="true" />
+          </a>
+
+          {deal.category && (
+            <Link
+              href={`/${deal.category}/${deal.slug}`}
+              className="text-center text-sm font-medium text-gray-500 underline underline-offset-2 hover:text-gray-700"
+            >
+              Bekijk productinfo
+            </Link>
+          )}
         </div>
       </div>
-    </a>
+    </div>
   );
 }

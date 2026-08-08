@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Lightbulb, Sparkles } from "lucide-react";
+import { Lightbulb, Sparkles, ExternalLink } from "lucide-react";
 import { getProductBySlug, getPriceHistory } from "../../../lib/products";
 import PriceHistoryChart from "../../../components/PriceHistoryChart";
 import SpecsTable from "../../../components/SpecsTable";
@@ -162,9 +162,10 @@ export default async function ProductPage({ params }: Props) {
                   href={product.product_url.startsWith("https://") ? product.product_url : "#"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
+                  className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
                 >
                   Bekijk bij Coolblue
+                  <ExternalLink className="h-4 w-4" aria-hidden="true" />
                 </a>
               </div>
             </>

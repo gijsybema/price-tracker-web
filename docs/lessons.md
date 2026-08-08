@@ -174,3 +174,12 @@
 - **Splitting manual QA between "verify the core regression case live, hand the rest of the checklist to the user" worked well** once browser automation started hitting friction (stale element refs after a layout shift). For a 12-row checklist, that division was faster and more reliable than fighting automation on every row.
 
 ---
+
+## Task: T32/T37 — DealCard redesign + secondary link, CTA restyle
+
+- **`SELECT * FROM other_view` views don't inherit new columns added to their source later** — Postgres bakes the column list in at `CREATE` time. Adding `slug` to `deal_candidates` never propagated to `homepage_topdeals`/`dealpage_topdeals`, which silently kept serving the old shape. TypeScript didn't catch it (the `Deal` type just claimed `slug: string`); only browser verification did, as `/soundbars/undefined`. Any future column added to a base view needs its dependent `SELECT *` views explicitly re-created.
+- **In-browser verify after every code change, not just at the end, is what caught the broken slug link** — it would have shipped invisibly if verification only happened once at final wrap-up.
+- **Pushing back on "why not just X" (rejecting a consistency-only justification and asking for a genuine blue-vs-black opinion) surfaced a real hierarchy argument** (contrast against bold black text/pricing already on the card) instead of a weaker "because it's already there" answer.
+- **Iterating narrowly on one sub-element at a time (savings pill → wording → CTA color) worked better than trying to lock the whole card design in one pass** — each round was a cheap mockup + short exchange, and it compounded into a more considered final design than one big option set up front would have.
+
+---

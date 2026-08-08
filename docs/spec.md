@@ -200,6 +200,7 @@ Search input visible in header on desktop; hidden on mobile — accessible via a
 | Full-text search quality on Dutch product names | Medium | Test with real queries; fall back to `ILIKE` if `tsvector` gives poor results |
 | `dealpage_topdeals` view not filterable by category | Medium | Check view definition; may need a new parameterized query instead |
 | Price history gaps (product not scraped every day) | Low | Chart handles sparse data gracefully (no line between gaps) |
+| Homepage becomes too dense/slow with added product rows | Medium | Decide final layout (placement, product count per category, whether "Browse by category" cards are replaced or kept) before implementing T38 |
 
 ---
 
@@ -238,12 +239,14 @@ Search input visible in header on desktop; hidden on mobile — accessible via a
 | T29 | 3 — Category pages | Mobile filter UX on category pages — sticky/floating brand filter access or back-to-top button so users can re-filter after scrolling down | ✅ |
 | T30 | 3 — Category pages | Price filter on category pages and deals page — client-side min/max inputs (`components/PriceFilter.tsx`), chosen over preset buckets since price ranges vary heavily by category | ✅ |
 | T31 | 8 — Dev tooling | `product_scraper/scripts/refresh_local_db.sh` — dump subset of prod into local DB to keep local in sync | ✅ |
-| T32 | 6 — Deals update | DealCard redesign — new look and feel; add secondary "Bekijk product" link to `/{category}/{slug}` | ⬜ |
+| T32 | 6 — Deals update | DealCard redesign — replaced blue "Bespaar" box with a single green pill (`Bespaar €X (Y% korting)`) + 30-day caption line; restructured card from a single outer `<a>` to a `div` with two distinct stacked CTAs: primary blue button "Bekijk bij Coolblue" (+ external-link icon) → affiliate URL, secondary underlined text link "Bekijk productinfo" → `/{category}/{slug}`; same external-link icon added to the product detail page's Coolblue button for consistency | ✅ |
 | T33 | 7 — SEO | Improve website copy for SEO — review and rewrite page headings, body text, and static metadata descriptions across all pages for keyword relevance and Dutch search intent | ⬜ |
 | T34 | 8 — UX | Mobile search bar — search icon in header expands inline input on tap (desktop input unchanged); close on Escape or outside tap | ⬜ |
 | T35 | 8 — UX | Lowest-price-ever indicator on product detail page — query all-time low from price history, show "Laagste prijs ooit: €X" label; highlight when current price ≤ all-time low (or within threshold TBD) | ⬜ |
 | T36 | 8 — UX | Spec-based filters on category pages and deals page — category-specific boolean/enum toggles from JSONB specs (e.g. Noise Cancelling for headphones/earbuds); plan which spec keys to expose per category before implementing | ⬜ |
-| T37 | 8 — UX | Make deal card text selectable — replace outer `<a>` wrapper with a `div` + stretched-link pattern (`after:absolute after:inset-0` on the CTA anchor) so the card stays fully clickable while allowing text selection | ⬜ |
+| T37 | 8 — UX | Make deal card text selectable — resolved via T32's card restructure: outer `<a>` replaced with a `div` wrapping two separate, explicit CTA links (no stretched-link overlay needed) — text is selectable since it's no longer nested inside a single anchor | ✅ |
+| T38 | 8 — UX | Homepage layout — add per-category preview rows (3–4 products per category: Headphones, Earbuds, Speakers, Soundbars) to increase product visibility on `/`. Placement/layout TBD — options include replacing the "Browse by category" link-cards with product previews, adding rows below the hero, or a tabbed/carousel layout; decide before implementing | ⬜ |
+| T39 | 1 — Foundation | Cleanup: remove dead `getDealpageDeals()` (`lib/deals.ts`) and the `dealpage_topdeals` DB view (coordinate removal with `product_scraper`) — unused since `/deals` moved capping logic into `DealsFilter.tsx` (T22/T23); discovered during T32 when the view was found missing the `slug` column | ⬜ |
 
 ---
 
