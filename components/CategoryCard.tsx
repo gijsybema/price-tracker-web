@@ -3,21 +3,25 @@ import Link from "next/link";
 type Props = {
   category: string;
   label: string;
+  description?: string;
   product_count: number;
   deal_count: number;
   image_url: string | null;
+  headingLevel?: "h2" | "h3";
 };
 
-export default function CategoryCard({ category, label, product_count, deal_count, image_url }: Props) {
+export default function CategoryCard({ category, label, description, product_count, deal_count, image_url, headingLevel = "h2" }: Props) {
+  const Heading = headingLevel;
   return (
     <Link
       href={`/${category}`}
       className="group flex items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
     >
       <div className="flex flex-col items-start gap-2">
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900 transition group-hover:text-black">
+        <Heading className="text-2xl font-bold tracking-tight text-gray-900 transition group-hover:text-black">
           {label}
-        </h2>
+        </Heading>
+        {description && <p className="text-sm text-gray-600">{description}</p>}
         <p className="text-sm text-gray-500">{product_count} producten</p>
         {deal_count > 0 && (
           <span className="inline-flex self-start items-center gap-1 whitespace-nowrap rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">

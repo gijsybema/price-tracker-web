@@ -1,20 +1,14 @@
 import { getCategorySummaries } from "../../lib/products";
 import CategoryCard from "../../components/CategoryCard";
+import { CATEGORY_SLUGS, CATEGORY_LABELS, CATEGORY_DESCRIPTIONS } from "../../lib/categories";
 
 export const revalidate = 300;
 
 export const metadata = {
-  title: "Alle productcategorieën | TechTracker",
+  title: "Audioproducten per categorie | TechTracker",
   description:
-    "Bekijk alle audioproducten die TechTracker volgt: koptelefoons, oordopjes, speakers en soundbars. Vergelijk prijzen en ontdek de beste deals.",
+    "Koptelefoons, earbuds, speakers en soundbars — met prijsgeschiedenis en actuele deals per categorie.",
 };
-
-const CATEGORIES = [
-  { slug: "headphones", label: "Koptelefoons" },
-  { slug: "earbuds",    label: "Oordopjes" },
-  { slug: "speakers",   label: "Speakers" },
-  { slug: "soundbars",  label: "Soundbars" },
-] as const;
 
 export default async function ProductsPage() {
   const summaries = await getCategorySummaries();
@@ -24,20 +18,21 @@ export default async function ProductsPage() {
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
       <div className="max-w-2xl">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900">Producten</h1>
+        <h1 className="text-4xl font-bold tracking-tight text-gray-900">Audioproducten per categorie</h1>
         <p className="mt-3 text-gray-600">
-          Kies een categorie om alle producten te bekijken die TechTracker volgt.
+          Koptelefoons, earbuds, speakers en soundbars — met prijsgeschiedenis en actuele deals per categorie.
         </p>
       </div>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2">
-        {CATEGORIES.map(({ slug, label }) => {
+        {CATEGORY_SLUGS.map((slug) => {
           const summary = summaryMap[slug];
           return (
             <CategoryCard
               key={slug}
               category={slug}
-              label={label}
+              label={CATEGORY_LABELS[slug]}
+              description={CATEGORY_DESCRIPTIONS[slug]}
               product_count={summary?.product_count ?? 0}
               deal_count={summary?.deal_count ?? 0}
               image_url={summary?.image_url ?? null}

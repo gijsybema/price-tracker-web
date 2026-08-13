@@ -183,3 +183,12 @@
 - **Iterating narrowly on one sub-element at a time (savings pill → wording → CTA color) worked better than trying to lock the whole card design in one pass** — each round was a cheap mockup + short exchange, and it compounded into a more considered final design than one big option set up front would have.
 
 ---
+
+## Task: T33 — Website copy for SEO
+
+- **Verify copy claims against actual render conditions, not assumed typical behavior.** The `/how-it-works` line "Op elke productpagina vind je..." wasn't caught until checking the literal `hasDiscount`/`dealInsight`/`history.length` conditions in source — copy describing dynamic UI needs to be checked against the code, not written from a general impression of what the page "usually" shows.
+- **Iterating narrowly (headline → paragraph → heading style) surfaced real pushback that a single big draft would have missed.** Rejecting "geen belang bij jouw aankoop" only came up because it was reviewed in isolation against the footer's affiliate disclosure — a full-page draft might have let that contradiction slide through unnoticed.
+- **Duplication should be extracted at the first repeat, not the third.** The same category label/description object got copy-pasted into 3 files (homepage, `/products`, `/[category]`) across separate slices before the verify pass caught it and consolidated it into `lib/categories.ts`.
+- **A full site-wide copy audit surfaced bugs that incremental editing never would have.** The incomplete sentence on `/about`, the typo/missing-space in `/how-it-works`'s old title, and inconsistent audio/tech scoping across pages had all shipped and sat unnoticed; worth an occasional full-site copy pass rather than only reviewing copy when touching a page for other reasons.
+
+---

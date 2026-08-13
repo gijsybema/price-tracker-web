@@ -12,7 +12,7 @@ export const metadata = {
   
         <div className="space-y-6 text-gray-600 leading-7">
           <p>
-            TechTracker biedt inzicht in prijsontwikkelingen van tech producten.
+            TechTracker biedt inzicht in prijsontwikkelingen van audioproducten.
             Aan de getoonde informatie kunnen geen rechten worden ontleend.
           </p>
   

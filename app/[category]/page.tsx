@@ -1,18 +1,11 @@
 import { notFound } from "next/navigation";
 import { getProductsByCategory } from "../../lib/products";
 import CategoryProductGrid from "../../components/CategoryProductGrid";
+import { CATEGORY_SLUGS, CATEGORY_LABELS, CATEGORY_DESCRIPTIONS, type CategorySlug as Category } from "../../lib/categories";
 
 export const revalidate = 300;
 
-const VALID_CATEGORIES = ["headphones", "earbuds", "speakers", "soundbars"] as const;
-type Category = (typeof VALID_CATEGORIES)[number];
-
-const CATEGORY_LABELS: Record<Category, string> = {
-  headphones: "Koptelefoons",
-  earbuds: "Oordopjes",
-  speakers: "Speakers",
-  soundbars: "Soundbars",
-};
+const VALID_CATEGORIES = CATEGORY_SLUGS;
 
 type Props = {
   params: Promise<{ category: string }>;
@@ -38,13 +31,14 @@ export default async function CategoryPage({ params }: Props) {
   const products = await getProductsByCategory(category);
 
   const label = CATEGORY_LABELS[category as Category];
+  const description = CATEGORY_DESCRIPTIONS[category as Category];
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
       <div className="max-w-2xl">
         <h1 className="text-4xl font-bold tracking-tight text-gray-900">{label}</h1>
         <p className="mt-3 text-gray-600">
-          {products.length} producten gevolgd door TechTracker.
+          {description} TechTracker volgt {products.length} producten in deze categorie.
         </p>
       </div>
 

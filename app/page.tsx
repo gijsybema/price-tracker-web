@@ -5,6 +5,7 @@ import SemanticSearch from "../components/SemanticSearch";
 import { getHomepageDeals } from "../lib/deals";
 import { getCategorySummaries } from "../lib/products";
 import { getSearchBrands } from "../lib/search";
+import { CATEGORY_SLUGS, CATEGORY_LABELS, CATEGORY_DESCRIPTIONS } from "../lib/categories";
 
 export const revalidate = 300;
 
@@ -38,8 +39,8 @@ export default async function Home() {
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
               TechTracker volgt dagelijks prijzen van koptelefoons, earbuds, speakers en soundbars
-              bij Nederlandse webshops. We tonen alleen echte prijsdalingen.
-              Gericht op premium modellen van bekende merken.
+              bij Nederlandse webshops en bouwt zo een betrouwbare prijsgeschiedenis op.
+              We tonen alleen echte prijsdalingen. Gericht op premium modellen van bekende merken.
             </p>
 
             <ul className="mt-8 grid gap-3 text-sm text-white/90 md:grid-cols-3 md:text-base">
@@ -68,7 +69,8 @@ export default async function Home() {
             Zoek met AI
           </h2>
           <p className="mt-3 text-gray-600">
-            Beschrijf wat je zoekt en wij vinden de beste match.
+            Vind koptelefoons, earbuds, speakers en soundbars op basis van specifieke
+            eigenschappen zoals noise cancelling, waterbestendigheid of batterijduur.
           </p>
         </div>
         <div className="mt-6">
@@ -136,17 +138,18 @@ export default async function Home() {
           </div>
 
           <div className="mt-10 grid gap-6 sm:grid-cols-2">
-            {(["headphones", "earbuds", "speakers", "soundbars"] as const).map((slug) => {
-              const label = { headphones: "Koptelefoons", earbuds: "Oordopjes", speakers: "Speakers", soundbars: "Soundbars" }[slug];
+            {CATEGORY_SLUGS.map((slug) => {
               const summary = summaryMap[slug];
               return (
                 <CategoryCard
                   key={slug}
                   category={slug}
-                  label={label}
+                  label={CATEGORY_LABELS[slug]}
+                  description={CATEGORY_DESCRIPTIONS[slug]}
                   product_count={summary?.product_count ?? 0}
                   deal_count={summary?.deal_count ?? 0}
                   image_url={summary?.image_url ?? null}
+                  headingLevel="h3"
                 />
               );
             })}
@@ -176,7 +179,7 @@ export default async function Home() {
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
               <p className="text-sm text-slate-300">Prijsdata</p>
               <p className="mt-2 text-2xl font-semibold">
-                Dagelijks gecontroleerde prijzen
+                Volledige prijsgeschiedenis, dagelijks bijgewerkt
               </p>
             </div>
 
@@ -189,9 +192,9 @@ export default async function Home() {
           </div>
           <div className="mx-auto max-w-6xl px-6 py-12">
           <div className="max-w-2xl">
-            <h2 className="text-lg font-semibold text-slate-300">
+            <h3 className="text-lg font-semibold text-slate-300">
               Wat wij bewust niet tonen
-            </h2>
+            </h3>
 
             <ul className="mt-4 space-y-3 text-sm text-slate-300 md:text-base">
               <li>✕ Nepkortingen met misleidende van/voor-prijzen</li>

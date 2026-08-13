@@ -7,8 +7,8 @@ import ScrollToTop from "../components/ScrollToTop";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata: Metadata = {
-  title: "Audio Deals Tracker",
-  description: "Track prijsdalingen van premium audioproducten in Nederland",
+  title: "TechTracker | Echte audio deals in Nederland",
+  description: "TechTracker volgt dagelijks prijzen van premium audioproducten in Nederland en laat alleen echte prijsdalingen zien.",
 };
 
 export default function RootLayout({

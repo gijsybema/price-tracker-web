@@ -11,7 +11,7 @@ export default function Footer() {
               TechTracker
             </p>
             <div className="mt-4 max-w-md space-y-1 text-sm leading-7 text-gray-600">
-              <p>Ontdek echte prijsdalingen op premium tech producten.</p>
+              <p>Ontdek echte prijsdalingen op premium audioproducten.</p>
               <p>Automatisch gedetecteerd met prijsdata.</p>
             </div>
           </div>

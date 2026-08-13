@@ -42,6 +42,7 @@
 - Before rotating, deleting, or narrowing the scope of a credential (DB role, API key) that might be used outside this repo, ask whether other projects/repos depend on it — don't treat the change as complete until that's confirmed either way.
 - Don't truncate/clamp user-facing AI-generated or long-form text as a default "tidiness" choice — confirm with the user first. What reads as clean in a mockup can read as broken/cut-off once real (long) content is live.
 - For copy/text tasks with multiple valid approaches: present 3–4 named options with a concrete rendered example and let the user choose — do not iterate one change at a time
+- When the same small lookup data (labels, descriptions, category metadata) is needed in a second file, extract it into a shared module immediately — don't wait for a third copy-paste to trigger the cleanup.
 
 ## Output Style
 - Be concise and structured

@@ -19,8 +19,8 @@ export default async function DealsPage() {
           Grootste prijsdalingen van audioproducten
         </h1>
         <p className="mt-4 text-lg text-gray-600">
-          Een overzicht van recente deals die door TechTracker zijn gedetecteerd.
-          TechTracker verkoopt zelf geen producten. Je wordt doorgestuurd naar de webshop.
+          Een overzicht van de beste prijsdalingen die TechTracker heeft gedetecteerd.
+          TechTracker verkoopt zelf geen producten — je wordt doorgestuurd naar de webshop.
         </p>
       </div>
 
