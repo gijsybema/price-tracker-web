@@ -1,11 +1,3 @@
-"use client";
-
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-  }
-}
-
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import type { Deal } from "../lib/deals";
@@ -85,13 +77,6 @@ export default function DealCard({ deal }: { deal: Deal }) {
             href={deal.product_url}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => {
-              window.gtag?.("event", "click_deal", {
-                product_name: deal.name,
-                price: deal.current_price,
-                deal_id: deal.id,
-              });
-            }}
             className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
           >
             Bekijk bij Coolblue

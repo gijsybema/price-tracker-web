@@ -161,9 +161,6 @@ export default async function ProductPage({ params }: Props) {
               <div className="mt-4">
                 <AffiliateLink
                   href={product.product_url.startsWith("https://") ? product.product_url : "#"}
-                  productName={product.name}
-                  price={product.current_price}
-                  productId={product.id}
                 />
               </div>
             </>

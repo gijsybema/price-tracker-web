@@ -43,6 +43,7 @@
 - Don't truncate/clamp user-facing AI-generated or long-form text as a default "tidiness" choice — confirm with the user first. What reads as clean in a mockup can read as broken/cut-off once real (long) content is live.
 - For copy/text tasks with multiple valid approaches: present 3–4 named options with a concrete rendered example and let the user choose — do not iterate one change at a time
 - When the same small lookup data (labels, descriptions, category metadata) is needed in a second file, extract it into a shared module immediately — don't wait for a third copy-paste to trigger the cleanup.
+- Avoid attaching onClick JS handlers to outbound `target="_blank"` links for click tracking — ad blockers flag the onClick+target="_blank" shape as a cloaked-redirect pattern and force the navigation into a stripped popup window. Prefer GA4 Enhanced Measurement (or another mechanism that doesn't run JS in the click path) for outbound-link tracking instead.
 
 ## Output Style
 - Be concise and structured

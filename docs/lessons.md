@@ -192,3 +192,11 @@
 - **A full site-wide copy audit surfaced bugs that incremental editing never would have.** The incomplete sentence on `/about`, the typo/missing-space in `/how-it-works`'s old title, and inconsistent audio/tech scoping across pages had all shipped and sat unnoticed; worth an occasional full-site copy pass rather than only reviewing copy when touching a page for other reasons.
 
 ---
+
+## Task: T40 — Coolblue-click GA4 tracking
+
+- **Manual click-tracking JS on outbound links can break the UX it's meant to measure.** The `onClick` + `target="_blank"` pattern in `DealCard`/`AffiliateLink` triggered ad-blocker anti-redirect-hijack heuristics, forcing the navigation into a stripped popup window instead of a normal tab — worth checking analytics implementations against real ad-blocker behavior, not just "does the event fire in GA".
+- **Testing in Incognito (no extensions) before touching any code isolated the real cause in one step.** Confirmed it was the ad blocker, not an app bug, before writing a single line — avoided a wrong first fix.
+- **A Key Event tied to a custom `gtag` event goes silently stale once the code that fires it is removed.** Data just flatlines with no error; worth periodically checking Key Events against what code still actually emits them.
+
+---
