@@ -1,8 +1,8 @@
 # SPEC: AI Features
 
 **Status:** Approved (pending scraper spec)
-**Features:** F1 — AI product descriptions · F2 — Semantic search
-**Phase 2 / next-phase work is documented at the bottom of this file** (§ Phase 2).
+**Features:** F1 — AI product descriptions · F2 — Semantic search · F3 — Python reference implementation (portfolio, Phase 3)
+**Phase 2 / Phase 3 (next-phase) work is documented at the bottom of this file** (§ Phase 2, § Phase 3).
 
 ---
 
@@ -26,6 +26,15 @@
 | ✅ | T14 | F2 | `sessionStorage` persistence of query/filters/results across navigation |
 | ✅ | T15 | F2 | Fix relevance-cutoff false negative on short/category queries (e.g. "speaker") via category/brand keyword bypass; document a manual test-scenario checklist |
 | ✅ | T16 | F2 | Restrict `DATABASE_URL` to a least-privilege, read-only Postgres role for this app — no `CREATE`/`DROP`/`INSERT`/`UPDATE`/`DELETE` |
+| ⬜ | T17 | F2 | Phase 2 — `lib/search-summary.ts`: prompt builder + non-streaming OpenAI chat completion call |
+| ⬜ | T18 | F2 | Phase 2 — `app/api/search-summary/route.ts`: Route Handler, rate-limited via T12 |
+| ⬜ | T19 | F2 | Phase 2 — Wire summary into `SemanticSearch.tsx`; remove `ai_description` from top-match card, keep `ai_deal_description` |
+| ⬜ | T20 | F2 | Phase 2 — Add streaming (client + server) to the cross-result summary |
+| ⬜ | T21 | F2 | Phase 2 — Manual grounding-accuracy checklist for the summary (≥5 queries) |
+| ⬜ | T22 | F3 | Phase 3 — Decide/create repo or notebook location for Python reference implementation |
+| ⬜ | T23 | F3 | Phase 3 — Port `lib/embeddings.ts` equivalent (embedding generation) |
+| ⬜ | T24 | F3 | Phase 3 — Port `lib/semantic-search.ts` equivalent as a config-driven `SemanticSearchEngine` class |
+| ⬜ | T25 | F3 | Phase 3 — Cross-check Python output against the TS implementation using T15's test queries |
 
 ---
 
@@ -44,8 +53,8 @@
 | In-stock handling in semantic search | OOS sinks below ALL in-stock results (still shown + badged), not hidden | `(availability = true) DESC` is the **primary** `ORDER BY` key, above cosine distance — so every in-stock result ranks above every OOS one, and relevance orders within each group. Diverges from FTS (where in-stock is only a tiebreaker after rank): an OOS product ranking #1 was judged undesirable. No hard `WHERE` on availability. |
 | Relevance cutoff | Drop results with cosine distance ≥ 0.55 (`MAX_RELEVANCE_DISTANCE`) | Calibrated on real queries: strong matches ~0.35–0.45, off-topic ~0.6+, gibberish ~0.8+. Prevents off-topic queries (products the catalog doesn't carry) from returning unrelated products — they return nothing instead, feeding T9's empty state. Tunable constant. |
 | IVFFlat recall / probes | `SET LOCAL ivfflat.probes = 100` (= index `lists`) per query | The IVFFlat index is approximate and **not filter-aware**: with the default `probes=1` it scans ~1% of vectors then applies the price/brand `WHERE`, so selective filters returned 0 rows even when many products matched (verified: `maxPrice=100` → 0 of 170). Probes = `lists` gives exact recall; still <20ms at ~700 products. Equivalent to a filter-first exact scan at this scale. **Revisit if the catalog grows large or the index is rebuilt with a different `lists`** — the constant is tied to the current `lists=100`. |
-| Query-time filter extraction (Option B) | Deferred; when added, pre-fills the UI controls | A lower-friction text-only path (LLM parses budget/brand from the query). Kept out of v1 for reliability. When built, it populates the same hard filters (which stay the source of truth), so nothing here is thrown away. |
-| Results presentation | v1: product cards + AI text on the top match only (A+B) | Ranked cards are the core recommendation. The #1 result additionally surfaces the product's *existing* scraper-written `ai_description` (+ `ai_deal_description` when in-stock) — an "AI recommendation" feel with zero query-time LLM cost and no hallucination risk (text is pre-vetted per product). AI text on top match only, to keep the grid clean. Cross-product LLM synthesis is Phase 2 (see below). |
+| Query-time filter extraction (Option B) | Dropped (2026-08-14) — see Phase 2 § Dropped ideas | Brand and specs are already in the embedding, so extraction adds no unique value there; price is the only non-embedded filter, but the slider is already low-friction, and the cases where extraction would help most (vague phrasing like "goedkope") require inferring a number rather than extracting one — a riskier feature than originally scoped. |
+| Results presentation | v1: product cards + AI text on the top match only | Ranked cards are the core recommendation. The #1 result additionally surfaces the product's *existing* scraper-written `ai_description` (+ `ai_deal_description` when in-stock) — an "AI recommendation" feel with zero query-time LLM cost and no hallucination risk (text is pre-vetted per product). AI text on top match only, to keep the grid clean. **Superseded once Phase 2's cross-result summary ships: `ai_description` drops off the top-match card, `ai_deal_description` stays — see Phase 2.** |
 | Search bar UX | Enter submits, Shift+Enter for newline; single-card visual style with a Sparkles/AI icon | Textarea default (plain Enter = newline) fights expected search-box behavior. The original plain textarea + separate button read as bland — a single bordered card with an AI icon reads as a distinct, AI-flavored search entry point rather than a generic form field. |
 | Top-match AI text length | Full text, no truncation | User preference: show the complete `ai_description` / `ai_deal_description` even though they're written for the product page and can run long, rather than a clamped/shortened version. Image is top-aligned (not vertically centered) to accommodate variable-height text. |
 | Search result persistence | `sessionStorage`, not `localStorage` or server state | Clicking a result and returning to the homepage should not lose the search. Session-scoped (cleared on tab/browser close) is the right lifetime — this is a "don't lose my place" convenience, not a durable saved-search feature. |
@@ -435,15 +444,123 @@ Sliding-window rate limit (`@upstash/ratelimit` + `@upstash/redis`), 20 requests
 
 ## Phase 2 (next, not in current scope)
 
-Deliberate fast-follows once v1 (A+B) ships and rate limiting (T12) is live:
+Discussed in detail 2026-08-14. Two of the three original ideas (filter extraction, concise AI copy) were interviewed through and dropped — rationale kept below, not deleted, so the reasoning isn't lost. One item remains in scope.
 
-- **C — LLM synthesis blurb over results.** A short generated paragraph that reasons *across* the returned products and tailors to the query (e.g. "Van deze resultaten past de Jabra X het best voor sport, en die is nu ook afgeprijsd…"). Distinct from B: B reuses per-product text; C reasons across the result set. Requirements when built:
-  - Chat-completion call per search (not an embedding) — real cost + latency; **stream** the response for UX.
-  - Gate behind T12 rate limiting + the OpenAI monthly cap before enabling.
-  - Ground strictly on the returned rows only (name/brand/price/specs/`ai_description`); forbid inventing specs or prices; cite prices from the data to avoid hallucination.
-- **B (Option B filter extraction) — LLM parses budget/brand from the query text** and pre-fills the T9 UI controls (which remain the source of truth). See decisions log.
-- **Concise search-result AI copy.** The top-match banner currently reuses the product page's `ai_description` / `ai_deal_description`, which are written long for that page. In v1 they are visually truncated (line-clamp). Phase 2: generate short, search-oriented snippets (~1 sentence "why it fits" + ~1 sentence price insight) — either a dedicated scraper field or trimmed at query time — so the banner shows purpose-built short copy instead of a clamped long description.
-- **Python reference implementation of retrieval logic (portfolio).** Currently the query-time retrieval logic (embed query → pgvector cosine search → relevance cutoff → hard filters → ranking) only exists as TypeScript ([lib/semantic-search.ts](../lib/semantic-search.ts)). This project doubles as an AI-engineering/Python portfolio piece, and the user (Python-first, doesn't read TS) can't currently point to or explain this logic in a language they're fluent in. Idea, discussed 2026-08-14: port the same logic (same 0.55 cosine-distance cutoff, same `ivfflat.probes=100` tuning, same category/brand-keyword cutoff bypass) into a Python script or notebook kept purely as a documented reference — not wired into production traffic, so no new deploy/hosting risk. Considered and rejected for now: (a) moving live query-time search into `product_scraper` — that repo is a scheduled batch pipeline today, and adding an always-on API would change what it is; (b) a standalone always-on, multi-tenant Python search *service* reusable across projects — real infra (hosting, deploy, cross-service auth) that isn't justified without a second concrete project needing it. A worthwhile middle ground if revisited: write the Python version as a config-driven `SemanticSearchEngine`-style class (table name, embedding column, filter fields, relevance cutoff passed in rather than hardcoded) so it's reusable as a *library* across future projects even while staying single-project as a service. If built, that class would live in its own separate repo (not inside `product_scraper` or this repo) — `pip install`-able into whichever project needs it, keeping it decoupled from any one project's schema or deploy lifecycle.
+### Dropped ideas (kept for rationale)
+
+- **~~Concise search-result AI copy~~ — dropped.** Original idea: replace the top-match banner's long `ai_description`/`ai_deal_description` with a short, purpose-written "why it fits" snippet (dedicated scraper field or query-time trim). Dropped because it's redundant with the cross-result summary below — once a query-level summary explains *why* the top match fits, a second per-product AI blurb duplicates that explanation. It was also the only one of the three ideas with a cross-repo dependency (`product_scraper` would need a new column) or a fallback that reproduces the "AI text reads cut off" problem already flagged once for this app. **Decision: `ai_description` is dropped from the top-match banner once the summary ships. `ai_deal_description` ("Prijs inzicht") stays** — it's price-specific insight, not a fit explanation, and isn't superseded by the summary.
+- **~~Query filter extraction (Option B)~~ — dropped.** Original idea: LLM parses budget/brand out of the query text and pre-fills the T9 price/brand controls. Dropped after walking through what it would actually add:
+  - Brand is already embedded in the vector (see "What to embed" in the decisions log above), so a query like "Sony koptelefoon" already ranks Sony products highly *without* a hard filter — extraction adds no unique value there.
+  - Price is the only filter genuinely excluded from the embedding (deliberately — it drifts) — so it's the only case extraction could add real value. But the price slider sits right next to the search box; the friction of "also drag the slider" for an explicit number already in the sentence is small.
+  - The cases where extraction *would* meaningfully help ("goedkope oordopjes", "beste soundbar") are vague/implied constraints where the LLM would be **inferring** a number, not extracting one already present — a materially riskier feature (guessing a price ceiling) than what was originally scoped.
+  - A genuinely bigger, separate idea surfaced in this discussion — **spec-based filtering** (e.g. `noise_cancelling`, `battery_life`, `water_resistant` from the `specs` JSONB column, rendered today via `components/SpecsTable.tsx`). Not pursued: specs are already folded into the embedding text (same "already in the vector" reasoning as brand), keys are category-dependent (headphones/earbuds/speakers/soundbars each have a different spec vocabulary — no universal schema like price/brand), and value types per key haven't been verified. If revisited, treat as its own feature, not a filter-extraction sub-task.
+
+### C — Cross-result AI summary (remaining Phase 2 item)
+
+A short generated paragraph that reasons *across* the returned products and tailors to the query (e.g. "Van deze resultaten past de Jabra X het best voor sport, en die is nu ook afgeprijsd…"), shown above the result grid. Replaces the dropped concise-copy idea's job of explaining "why this fits" — at the result-set level instead of per-card.
+
+**1. Functional Requirements**
+- Triggered only when the search returns ≥1 result (skip on empty/error state)
+- One chat-completion call per search, grounded strictly on the returned rows (name/brand/price/in_stock/`ai_description`) — must not invent specs or prices outside that data
+- Streams into the UI
+- Renders above the result grid, below the search card
+- `ai_deal_description` ("Prijs inzicht") stays on the top-match card as-is; `ai_description` is removed from that card once this ships (see dropped-ideas note above)
+
+**2. Non-Functional Requirements**
+- Result cards render immediately; the summary streams in independently and must never block card rendering
+- Gated behind T12's existing per-IP rate limit and the existing OpenAI monthly cap — no new abuse-protection mechanism
+
+**3. Technical Constraints**
+- Chat completion is real cost + latency, unlike v1's embedding-only search — reuse the existing rate limiter, don't build a second one
+- Streaming to the client doesn't fit a Server Action cleanly — needs a Route Handler
+
+**4. Architecture Notes**
+- New `app/api/search-summary/route.ts` (Route Handler, streams), called client-side after `searchSemantic` resolves — a separate request, not blocking the main search
+- Prompt builder in `lib/search-summary.ts`, mirroring `lib/semantic-search.ts`'s placement
+- Reuses `checkRateLimit` from `lib/rate-limit.ts` (T12)
+
+**5. Implementation Phases**
+1. Non-streaming Route Handler + hardcoded prompt, tested directly (curl)
+2. Wire into `SemanticSearch.tsx`, render once complete (no streaming yet); remove `ai_description` from the top-match card
+3. Add streaming
+4. Rate-limit/cap verification + prompt tuning against hallucination, using a manual test-scenario checklist (same convention as T15)
+
+**6. Risks / Ambiguities**
+- Model choice and exact prompt wording not yet decided
+- No automated grounding check — relies on prompt instructions + manual spot-checks across several queries
+- Streaming architecture (Route Handler, not Server Action) is a real decision baked into the design above, not an implementation detail to revisit casually
+
+**7. Task Breakdown**
+- T17 — `lib/search-summary.ts` (prompt builder + non-streaming OpenAI chat completion call)
+- T18 — `app/api/search-summary/route.ts` (Route Handler, rate-limited via T12)
+- T19 — Wire into `SemanticSearch.tsx`; remove `ai_description` from top-match card, keep `ai_deal_description`
+- T20 — Add streaming (client + server)
+- T21 — Manual grounding-accuracy checklist (≥5 queries, same convention as T15)
+
+**8. Acceptance Checklist**
+- [ ] Summary only shown when ≥1 result
+- [ ] No reference to products/specs/prices outside the returned rows (manually verified across ≥5 queries)
+- [ ] Doesn't block result-card rendering
+- [ ] Rate-limited via the existing T12 gate (same IP bucket, no separate limiter)
+- [ ] `ai_description` no longer rendered on the top-match card; `ai_deal_description` ("Prijs inzicht") still is
+
+---
+
+## Phase 3 (later, portfolio-only — no production dependency)
+
+### Python reference implementation of retrieval logic
+
+Currently the query-time retrieval logic (embed query → pgvector cosine search → relevance cutoff → hard filters → ranking) only exists as TypeScript ([lib/semantic-search.ts](../lib/semantic-search.ts)). This project doubles as an AI-engineering/Python portfolio piece, and the user (Python-first, doesn't read TS) can't currently point to or explain this logic in a language they're fluent in.
+
+Moved out of Phase 2 (2026-08-14) — it's an independent portfolio artifact with no dependency on or from this app's production code, so it doesn't need to ship alongside the summary feature above.
+
+**Product Brief:** A documented, non-production Python port of the same retrieval logic, structured as a reusable, config-driven library rather than a hardcoded script — built first as a working piece against this project's real schema, with **no coupling to this app in either direction**.
+
+**1. Functional Requirements**
+- Reproduces the same logic as `lib/semantic-search.ts`: 0.55 cosine-distance cutoff, `ivfflat.probes=100`, the T15 category/brand keyword bypass, price/brand hard filters, in-stock-first ordering
+- Factored as a config-driven class (e.g. `SemanticSearchEngine`) taking table name, embedding column, filter fields, and relevance cutoff as config — not hardcoded to `products`/`price_history` — so the *pattern* generalizes even though only one catalog uses it today
+- Runs against the real DB (read-only) or a documented sample dataset
+
+**2. Non-Functional Requirements**
+- Script/notebook + library module only — no hosting, no auth, no deploy pipeline, no always-on process
+- Read-only DB access only, reusing the `scraper_readonly` role from T16 — no new credential
+
+**3. Technical Constraints**
+- Lives in its own repo, separate from both `price-tracker-web` and `product_scraper`
+- **This project will not use it.** `price-tracker-web` keeps its own TypeScript implementation as the real production code; there's no in-process way for a Next.js app to call a Python library, and wiring them together would require a live network call — see the "live traffic" discussion below, which is explicitly deferred, not assumed.
+
+**4. Architecture Notes — "should this ever serve live traffic?" (brainstormed 2026-08-14, decision deferred)**
+Four shapes considered, from safest to most "live," **not decided now**:
+  1. **Pure reference** — script/notebook only, never touches real traffic. Zero risk, zero hosting; weakest "it's live" claim.
+  2. **Isolated demo endpoint** — small standalone service (e.g. FastAPI), publicly reachable, but decoupled from `price-tracker-web`'s request path. Strongest honest "live" claim for the lowest risk to the real product; costs recurring hosting + its own rate-limit/cost-cap story (mirrors T12's problem in a second codebase).
+  3. **Shadow traffic** — real queries from this app also get fire-and-forget forwarded to the Python service, logged but not shown to users. Gets "served real production queries" bragging rights, but nothing user-facing to point to, and adds a call-out from the main app's request path.
+  4. **Replace the TS path** — Python service becomes the real backend for this app's search. Rejected — same reasoning as the existing "moving live query-time search into `product_scraper`" rejection in the Phase 2 decisions log: turns a portfolio side-project into infrastructure this app's real users depend on.
+  - **Current lean, not committed:** if a live version is ever built, #2 (isolated demo endpoint) is the better trade-off than #3/#4 — it can *import* the library from 1, so building the library first is a superset of any of these paths, not a step that has to be redone.
+
+**5. Implementation Phases**
+1. Decide/create the repo or notebook location
+2. Port embedding generation (`lib/embeddings.ts` equivalent)
+3. Port retrieval SQL/logic as the config-driven class (`lib/semantic-search.ts` equivalent)
+4. Sanity-check outputs against T15's test queries, compare to the TS version
+5. *(Explicitly deferred, not scheduled)* — decide whether to add a live demo endpoint per the options above
+
+**6. Risks / Ambiguities**
+- Repo location not yet created/decided
+- "Documented reference" thoroughness not specified
+- Whether a live endpoint ever gets built is an open, deliberately unscheduled decision — don't assume phase 5 happens
+
+**7. Task Breakdown**
+- T22 — Decide/create repo or notebook location
+- T23 — Port embedding generation
+- T24 — Port retrieval logic as a config-driven class
+- T25 — Cross-check against the TS implementation using T15's queries
+
+**8. Acceptance Checklist**
+- [ ] Same cutoff/probes/bypass constants as `lib/semantic-search.ts`, explicitly noted as intentionally mirrored
+- [ ] Config-driven (table/column/filters/cutoff passed in), not hardcoded to this catalog
+- [ ] Read-only DB access only
+- [ ] Not imported/called by production code in either repo, and `price-tracker-web` does not call out to it
+- [ ] At least one side-by-side output comparison vs. the TS version
 
 ## Out of scope
 
