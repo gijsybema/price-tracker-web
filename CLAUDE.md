@@ -46,6 +46,7 @@
 - Avoid attaching onClick JS handlers to outbound `target="_blank"` links for click tracking — ad blockers flag the onClick+target="_blank" shape as a cloaked-redirect pattern and force the navigation into a stripped popup window. Prefer GA4 Enhanced Measurement (or another mechanism that doesn't run JS in the click path) for outbound-link tracking instead.
 - Each `lib/*.ts` module that lazily instantiates an external client (OpenAI, DB pool, Redis) owns its own singleton rather than importing another module's — keeps modules independently testable/removable even at the cost of a small duplicated singleton pattern.
 - When a Route Handler needs data the client already has from a prior Server Action call (e.g. search results), pass it through in the request body rather than re-fetching/re-querying server-side — but validate array length/shape defensively, since the payload is now client-controlled.
+- When firing an async request in response to a user action without awaiting it in the main flow (e.g. a background summary fetch after a search), guard against a superseded/stale response with both an `AbortController` (cancels the request) and a generation/sequence counter (defense-in-depth: ignore a stale response even if it still lands) — see `SemanticSearch.tsx`'s summary-fetch pattern.
 
 ## Output Style
 - Be concise and structured

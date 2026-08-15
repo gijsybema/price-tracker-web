@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Lightbulb, Sparkles } from "lucide-react";
 import PriceFilter from "./PriceFilter";
@@ -66,7 +66,6 @@ function ResultImage({ r, className }: { r: SearchResult; className: string }) {
 
 function TopMatchBanner({ r }: { r: SearchResult }) {
   const inStock = r.in_stock === true;
-  const desc = r.ai_description?.trim();
   const deal = r.ai_deal_description?.trim();
 
   return (
@@ -94,10 +93,6 @@ function TopMatchBanner({ r }: { r: SearchResult }) {
           <PriceLine r={r} />
           <StockLine r={r} />
         </div>
-
-        {desc && (
-          <p className="mt-3 text-sm leading-relaxed text-gray-600">{desc}</p>
-        )}
 
         {inStock && deal && (
           <div className="mt-3 rounded-xl border border-blue-200 bg-blue-50 px-3.5 py-2.5">
@@ -137,6 +132,18 @@ function ResultCard({ r }: { r: SearchResult }) {
   );
 }
 
+function SearchSummaryCard({ text }: { text: string }) {
+  return (
+    <div className="rounded-2xl border border-indigo-200 bg-indigo-50 px-4 py-3.5">
+      <div className="flex items-center gap-1.5">
+        <Sparkles className="h-4 w-4 text-indigo-600" aria-hidden="true" />
+        <span className="text-xs font-semibold text-indigo-800">AI samenvatting</span>
+      </div>
+      <p className="mt-1 text-sm leading-relaxed text-indigo-900">{text}</p>
+    </div>
+  );
+}
+
 // Persists the last search (query, filters, results) in sessionStorage so it's
 // still there if the user clicks through to a product and comes back to the
 // homepage. Cleared automatically when the browser tab/session ends.
@@ -150,6 +157,7 @@ type PersistedState = {
   status: "idle" | "loading" | "done";
   results: SearchResult[];
   error: string | null;
+  summary: string | null;
 };
 
 type Props = {
@@ -165,6 +173,17 @@ export default function SemanticSearch({ brands }: Props) {
   const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [summary, setSummary] = useState<string | null>(null);
+  const [summaryStatus, setSummaryStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
+
+  // Bumped on every runSearch() call. Lets an in-flight summary fetch detect
+  // it's been superseded by a newer search and discard its (stale) result
+  // instead of overwriting the current one.
+  const searchGenerationRef = useRef(0);
+  // Aborts the previous summary request when a new search starts, so a
+  // superseded fetch doesn't run to completion server-side (wasted OpenAI
+  // call + rate-limit consumption) just to have its result thrown away.
+  const summaryAbortRef = useRef<AbortController | null>(null);
 
   // Restore a previous search on mount.
   useEffect(() => {
@@ -179,6 +198,8 @@ export default function SemanticSearch({ brands }: Props) {
         setStatus(saved.status === "loading" ? "idle" : saved.status);
         setResults(saved.results);
         setError(saved.error);
+        setSummary(saved.summary ?? null);
+        setSummaryStatus(saved.summary ? "done" : "idle");
       }
     } catch {
       // Corrupt/unavailable storage — start fresh.
@@ -211,11 +232,57 @@ export default function SemanticSearch({ brands }: Props) {
     });
   }
 
+  // Fetches the cross-result AI summary after a search completes. Runs
+  // independently of card rendering (never awaited by runSearch) — a slow or
+  // failed summary must never hold up or hide the actual results. Guarded by
+  // `generation` so a summary for an old search can't land after a newer
+  // search has already started and overwrite its state.
+  async function fetchSummary(
+    searchQuery: string,
+    searchResults: SearchResult[],
+    generation: number,
+    persistedBase: PersistedState,
+    signal: AbortSignal
+  ) {
+    setSummaryStatus("loading");
+    try {
+      const res = await fetch("/api/search-summary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: searchQuery, results: searchResults }),
+        signal,
+      });
+      const data = await res.json();
+
+      if (searchGenerationRef.current !== generation) return; // superseded
+
+      if (!res.ok || data.error || !data.summary) {
+        setSummaryStatus("error");
+        return;
+      }
+
+      setSummary(data.summary);
+      setSummaryStatus("done");
+      persist({ ...persistedBase, summary: data.summary });
+    } catch (err) {
+      if (err instanceof DOMException && err.name === "AbortError") return; // expected — a newer search superseded this one
+      console.error("fetchSummary failed:", err);
+      if (searchGenerationRef.current === generation) {
+        setSummaryStatus("error");
+      }
+    }
+  }
+
   async function runSearch() {
     if (status === "loading") return;
 
+    const generation = ++searchGenerationRef.current;
+    summaryAbortRef.current?.abort();
+
     setStatus("loading");
     setError(null);
+    setSummary(null);
+    setSummaryStatus("idle");
 
     const min = minPrice !== "" && !isNaN(Number(minPrice)) ? Number(minPrice) : null;
     const max = maxPrice !== "" && !isNaN(Number(maxPrice)) ? Number(maxPrice) : null;
@@ -239,7 +306,7 @@ export default function SemanticSearch({ brands }: Props) {
     setResults(finalResults);
     setStatus("done");
 
-    persist({
+    const persistedBase: PersistedState = {
       query,
       selectedBrands: [...selectedBrands],
       minPrice,
@@ -247,7 +314,15 @@ export default function SemanticSearch({ brands }: Props) {
       status: "done",
       results: finalResults,
       error: finalError,
-    });
+      summary: null,
+    };
+    persist(persistedBase);
+
+    if (!finalError && finalResults.length > 0) {
+      const controller = new AbortController();
+      summaryAbortRef.current = controller;
+      fetchSummary(query, finalResults, generation, persistedBase, controller.signal);
+    }
   }
 
   function onSubmit(e: React.FormEvent) {
@@ -342,6 +417,7 @@ export default function SemanticSearch({ brands }: Props) {
 
         {status === "done" && !error && results.length > 0 && (
           <div className="flex flex-col gap-6">
+            {summaryStatus === "done" && summary && <SearchSummaryCard text={summary} />}
             <TopMatchBanner r={results[0]} />
             {results.length > 1 && (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

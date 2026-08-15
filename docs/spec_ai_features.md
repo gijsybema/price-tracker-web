@@ -28,13 +28,15 @@
 | ✅ | T16 | F2 | Restrict `DATABASE_URL` to a least-privilege, read-only Postgres role for this app — no `CREATE`/`DROP`/`INSERT`/`UPDATE`/`DELETE` |
 | ✅ | T17 | F2 | Phase 2 — `lib/search-summary.ts`: prompt builder + non-streaming OpenAI chat completion call |
 | ✅ | T18 | F2 | Phase 2 — `app/api/search-summary/route.ts`: Route Handler, rate-limited via T12 |
-| ⬜ | T19 | F2 | Phase 2 — Wire summary into `SemanticSearch.tsx`; remove `ai_description` from top-match card, keep `ai_deal_description` |
+| ✅ | T19 | F2 | Phase 2 — Wire summary into `SemanticSearch.tsx`; remove `ai_description` from top-match card, keep `ai_deal_description` |
 | ⬜ | T20 | F2 | Phase 2 — Add streaming (client + server) to the cross-result summary |
 | ⬜ | T21 | F2 | Phase 2 — Manual grounding-accuracy checklist for the summary (≥5 queries) |
 | ⬜ | T22 | F3 | Phase 3 — Decide/create repo or notebook location for Python reference implementation |
 | ⬜ | T23 | F3 | Phase 3 — Port `lib/embeddings.ts` equivalent (embedding generation) |
 | ⬜ | T24 | F3 | Phase 3 — Port `lib/semantic-search.ts` equivalent as a config-driven `SemanticSearchEngine` class |
 | ⬜ | T25 | F3 | Phase 3 — Cross-check Python output against the TS implementation using T15's test queries |
+| ⬜ | T26 | F2 | Polish look & feel of the "AI samenvatting" card (`SearchSummaryCard` in `SemanticSearch.tsx`) — current version is functional/plain, needs a visual design pass |
+| ⬜ | T27 | F2 | Investigate negation handling in semantic search — e.g. "koptelefoon zonder noise cancelling" returned a product *with* noise cancelling as top match (the T17 summary correctly flagged the mismatch in its own text, exposing a retrieval-layer issue, not a summary bug). Likely an embedding-model limitation with negated queries; needs research into mitigation (query preprocessing, negation detection, reranking, etc.) before any fix is scoped |
 
 ---
 
@@ -479,6 +481,7 @@ A short generated paragraph that reasons *across* the returned products and tail
   - Takes `{ query, results }` in the POST body — the client passes along the results it already has; the route does not re-run the embedding/pgvector search
 - Prompt builder in `lib/search-summary.ts`, mirroring `lib/semantic-search.ts`'s placement
 - Reuses `checkRateLimit` from `lib/rate-limit.ts` (T12)
+- Client guards against a superseded summary response (user re-searches before the previous summary resolves) with both an `AbortController` and a generation counter — see `SemanticSearch.tsx`
 
 **5. Implementation Phases**
 1. Non-streaming Route Handler + hardcoded prompt, tested directly (curl)

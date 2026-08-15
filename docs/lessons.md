@@ -209,3 +209,12 @@
 - **The separate FULL-mode verify pass caught what the inline implement check missed.** A missing cost-bounding max-length check on a new public endpoint, and a misleading function signature (`results: SearchResult[]` when only `results[0]` was ever used) both surfaced only in the dedicated verify pass — worth treating that second pass as non-optional for any task that adds a new public-facing endpoint.
 
 ---
+
+## Task: T19 — Wire cross-result AI summary into `SemanticSearch.tsx`
+
+- **When the Browser pane isn't compositing frames, computer-tool clicks/screenshots can silently no-op instead of erroring.** Twice this task, a click "succeeded" per the tool's own response but never actually reached the React handler — only cross-checking `sessionStorage`/network requests after the fact caught it. Verify via app state, not just tool return values, whenever a preceding action's effect isn't independently confirmed.
+- **DOM-level event dispatch (native value setter + `dispatchEvent` + `.click()`) is a reliable fallback for driving React inputs when coordinate-based `computer` actions aren't landing.** Worked cleanly once switched to it — worth reaching for immediately if a click/screenshot fails with a "pane not displayed" error, rather than retrying the same coordinate approach.
+- **`AbortController` + a generation/sequence counter together closed the race condition more completely than either alone would have.** The counter alone already prevented stale data from ever reaching the UI; adding the abort on top stopped the wasted request (cost + rate-limit consumption) at the source. Worth pairing both whenever a fire-and-forget async call can be superseded by a newer one.
+- **A grounded, honest AI summary doubled as an unplanned diagnostic tool.** The negation-handling bug (T27) surfaced only because the summary text accurately described a mismatch instead of hallucinating a fit — a reminder that strict grounding has value beyond "no wrong facts," it also makes underlying retrieval bugs visible instead of papering over them.
+
+---
