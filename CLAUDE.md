@@ -44,6 +44,8 @@
 - For copy/text tasks with multiple valid approaches: present 3–4 named options with a concrete rendered example and let the user choose — do not iterate one change at a time
 - When the same small lookup data (labels, descriptions, category metadata) is needed in a second file, extract it into a shared module immediately — don't wait for a third copy-paste to trigger the cleanup.
 - Avoid attaching onClick JS handlers to outbound `target="_blank"` links for click tracking — ad blockers flag the onClick+target="_blank" shape as a cloaked-redirect pattern and force the navigation into a stripped popup window. Prefer GA4 Enhanced Measurement (or another mechanism that doesn't run JS in the click path) for outbound-link tracking instead.
+- Each `lib/*.ts` module that lazily instantiates an external client (OpenAI, DB pool, Redis) owns its own singleton rather than importing another module's — keeps modules independently testable/removable even at the cost of a small duplicated singleton pattern.
+- When a Route Handler needs data the client already has from a prior Server Action call (e.g. search results), pass it through in the request body rather than re-fetching/re-querying server-side — but validate array length/shape defensively, since the payload is now client-controlled.
 
 ## Output Style
 - Be concise and structured

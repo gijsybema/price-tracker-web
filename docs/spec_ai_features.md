@@ -26,8 +26,8 @@
 | ✅ | T14 | F2 | `sessionStorage` persistence of query/filters/results across navigation |
 | ✅ | T15 | F2 | Fix relevance-cutoff false negative on short/category queries (e.g. "speaker") via category/brand keyword bypass; document a manual test-scenario checklist |
 | ✅ | T16 | F2 | Restrict `DATABASE_URL` to a least-privilege, read-only Postgres role for this app — no `CREATE`/`DROP`/`INSERT`/`UPDATE`/`DELETE` |
-| ⬜ | T17 | F2 | Phase 2 — `lib/search-summary.ts`: prompt builder + non-streaming OpenAI chat completion call |
-| ⬜ | T18 | F2 | Phase 2 — `app/api/search-summary/route.ts`: Route Handler, rate-limited via T12 |
+| ✅ | T17 | F2 | Phase 2 — `lib/search-summary.ts`: prompt builder + non-streaming OpenAI chat completion call |
+| ✅ | T18 | F2 | Phase 2 — `app/api/search-summary/route.ts`: Route Handler, rate-limited via T12 |
 | ⬜ | T19 | F2 | Phase 2 — Wire summary into `SemanticSearch.tsx`; remove `ai_description` from top-match card, keep `ai_deal_description` |
 | ⬜ | T20 | F2 | Phase 2 — Add streaming (client + server) to the cross-result summary |
 | ⬜ | T21 | F2 | Phase 2 — Manual grounding-accuracy checklist for the summary (≥5 queries) |
@@ -476,6 +476,7 @@ A short generated paragraph that reasons *across* the returned products and tail
 
 **4. Architecture Notes**
 - New `app/api/search-summary/route.ts` (Route Handler, streams), called client-side after `searchSemantic` resolves — a separate request, not blocking the main search
+  - Takes `{ query, results }` in the POST body — the client passes along the results it already has; the route does not re-run the embedding/pgvector search
 - Prompt builder in `lib/search-summary.ts`, mirroring `lib/semantic-search.ts`'s placement
 - Reuses `checkRateLimit` from `lib/rate-limit.ts` (T12)
 
@@ -486,7 +487,7 @@ A short generated paragraph that reasons *across* the returned products and tail
 4. Rate-limit/cap verification + prompt tuning against hallucination, using a manual test-scenario checklist (same convention as T15)
 
 **6. Risks / Ambiguities**
-- Model choice and exact prompt wording not yet decided
+- ~~Model choice and exact prompt wording not yet decided~~ — resolved: `gpt-4o-mini`, `temperature: 0.3`, grounded strictly on the top result only (name/brand/price/in_stock/`ai_description`) — see `lib/search-summary.ts`. No comparison across results in the summary text (an earlier "mention the runner-up" idea was considered and dropped for grounding-reliability reasons).
 - No automated grounding check — relies on prompt instructions + manual spot-checks across several queries
 - Streaming architecture (Route Handler, not Server Action) is a real decision baked into the design above, not an implementation detail to revisit casually
 

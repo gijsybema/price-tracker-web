@@ -200,3 +200,12 @@
 - **A Key Event tied to a custom `gtag` event goes silently stale once the code that fires it is removed.** Data just flatlines with no error; worth periodically checking Key Events against what code still actually emits them.
 
 ---
+
+## Task: T17+T18 — Cross-result AI summary (`lib/search-summary.ts` + `app/api/search-summary/route.ts`)
+
+- **Combining tightly-coupled tasks into one plan→implement pass avoids re-deriving shared context.** T17's prompt builder has no independent purpose without T18's route — planning and implementing them together (rather than as two separate sessions) kept grounding rules and prompt structure in one continuous thread.
+- **PowerShell's `curl` alias silently breaks real curl syntax.** `curl -d ... -H ...` in PowerShell actually calls `Invoke-WebRequest`, which doesn't accept those flags the same way — cost a confused round-trip during manual testing. Default to Git Bash (or `Invoke-RestMethod`) for ad-hoc API testing on this machine.
+- **The Browser-pane preview tool doesn't inherit `NODE_EXTRA_CA_CERTS`, even though it's set persistently via `setx`.** A Bash-tool-launched `npm run dev` does inherit it. Any verification involving outbound HTTPS (OpenAI, Upstash, etc.) needs the Bash-launched server, not the preview pane, on this machine.
+- **The separate FULL-mode verify pass caught what the inline implement check missed.** A missing cost-bounding max-length check on a new public endpoint, and a misleading function signature (`results: SearchResult[]` when only `results[0]` was ever used) both surfaced only in the dedicated verify pass — worth treating that second pass as non-optional for any task that adds a new public-facing endpoint.
+
+---

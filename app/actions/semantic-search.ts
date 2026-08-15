@@ -1,20 +1,13 @@
 "use server";
 
-import { headers } from "next/headers";
 import { generateEmbedding } from "../../lib/embeddings";
 import { semanticSearch, isLikelyOnTopicQuery, type SemanticSearchFilters } from "../../lib/semantic-search";
 import { checkRateLimit } from "../../lib/rate-limit";
 import { getSearchBrands, type SearchResult } from "../../lib/search";
+import { getClientIp } from "../../lib/request-ip";
 
 const MIN_QUERY_LENGTH = 3;
 const MAX_QUERY_LENGTH = 500;
-
-async function getClientIp(): Promise<string | null> {
-  const h = await headers();
-  const forwardedFor = h.get("x-forwarded-for");
-  if (forwardedFor) return forwardedFor.split(",")[0].trim();
-  return h.get("x-real-ip");
-}
 
 // Server Action: embeds the user query and runs the pgvector search.
 export async function searchSemantic(
